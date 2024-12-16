@@ -24,7 +24,7 @@ export const uploadMulter = multer({
 const uploadImage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     if (!req.file) {

@@ -18,7 +18,7 @@ enum ELoginProvider {
   normalEmail
 }
 
-model user {
+model User {
   id           String    @id @default(uuid()) @unique
   name         String
   email        String    @unique
@@ -29,11 +29,11 @@ model user {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  blogs        blog[]    // Relation to blogs created by the user
-  wishlist     wishlist[] // One-to-one relation for a user's wishlist
-} 
+  blogs        Blog[]    // Relation to blogs created by the user
+  wishlist     Wishlist[] // One-to-one relation for a user's wishlist
+}
 
-model blog {
+model Blog {
   id          String    @id @default(uuid()) @unique
   title       String
   description String
@@ -42,28 +42,29 @@ model blog {
   updatedAt   DateTime  @updatedAt
 
   authorId    String
-  author      user      @relation(fields: [authorId], references: [id] ,onDelete: Cascade ) // Author of the blog
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade) // Author of the blog
 }
 
-model wishlist {
+model Wishlist {
   id        String    @id @default(uuid()) @unique
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   userId    String
-  user      user      @relation(fields: [userId], references: [id] ,onDelete: Cascade) // Wishlist belongs to a user
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Wishlist belongs to a user
 }
 
-model bookCategory {
+model BookCategory {
   id          String    @id @default(uuid()) @unique
   name        String
   description String
-
-  books       book[]    // One-to-many relation with books
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  books       Book[]    // One-to-many relation with books
 }
 
-model book {
+model Book {
   id           String       @id @default(uuid()) @unique
   name         String
   photo        String
@@ -71,49 +72,52 @@ model book {
   updatedAt    DateTime     @updatedAt
 
   categoryId   String?
-  category     bookCategory? @relation(fields: [categoryId], references: [id] ,onDelete: Cascade) // Optional category for the book
+  category     BookCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Optional category for the book
 
   authorId     String
-  author       author       @relation(fields: [authorId], references: [id] ,onDelete: Cascade) // Book's author
+  author       Author       @relation(fields: [authorId], references: [id], onDelete: Cascade) // Book's author
 
   publisherId  String
-  publisher    publisher    @relation(fields: [publisherId], references: [id] ,onDelete: Cascade) // Book's publisher
+  publisher    Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade) // Book's publisher
 
-  chapters     chapter[]    // One-to-many relation with chapters
+  chapters     Chapter[]    // One-to-many relation with chapters
 }
 
-model author {
+model Author {
   id           String    @id @default(uuid()) @unique
   name         String
   photoUrl     String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  books        book[]    // One-to-many relation with books
+  books        Book[]    // One-to-many relation with books
 }
 
-model publisher {
+model Publisher {
   id           String    @id @default(uuid()) @unique
   name         String
   photoUrl     String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  books        book[]    // One-to-many relation with books
+  books        Book[]    // One-to-many relation with books
 }
 
-model chapter {
+model Chapter {
   id          String        @id @default(uuid()) @unique
   title       String
   bookId      String
-  book        book          @relation(fields: [bookId], references: [id] ,onDelete: Cascade) // Belongs to a book
-
-  subChapters subChapter[]  // One-to-many relation with sub-chapters
+  book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  subChapters SubChapter[]  // One-to-many relation with sub-chapters
 }
 
-model subChapter {
+model SubChapter {
   id         String    @id @default(uuid()) @unique
   title      String
+    createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   chapterId  String
-  chapter    chapter   @relation(fields: [chapterId], references: [id],onDelete: Cascade) // Belongs to a chapter
+  chapter    Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
 }
