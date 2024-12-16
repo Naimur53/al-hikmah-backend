@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EUserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum ELoginProvider {
+  google
+  normalEmail
+}
+
+model user {
+  id           String    @id @default(uuid()) @unique
+  name         String
+  email        String    @unique
+  password     String?
+  photoUrl     String?
+  loginProvider ELoginProvider @default(normalEmail)
+  role         EUserRole @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  blogs        blog[]    // Relation to blogs created by the user
+  wishlist     wishlist[] // One-to-one relation for a user's wishlist
+} 
+
+model blog {
+  id          String    @id @default(uuid()) @unique
+  title       String
+  description String
+  status      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId    String
+  author      user      @relation(fields: [authorId], references: [id] ,onDelete: Cascade ) // Author of the blog
+}
+
+model wishlist {
+  id        String    @id @default(uuid()) @unique
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userId    String
+  user      user      @relation(fields: [userId], references: [id] ,onDelete: Cascade) // Wishlist belongs to a user
+}
+
+model bookCategory {
+  id          String    @id @default(uuid()) @unique
+  name        String
+  description String
+
+  books       book[]    // One-to-many relation with books
+}
+
+model book {
+  id           String       @id @default(uuid()) @unique
+  name         String
+  photo        String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  categoryId   String?
+  category     bookCategory? @relation(fields: [categoryId], references: [id] ,onDelete: Cascade) // Optional category for the book
+
+  authorId     String
+  author       author       @relation(fields: [authorId], references: [id] ,onDelete: Cascade) // Book's author
+
+  publisherId  String
+  publisher    publisher    @relation(fields: [publisherId], references: [id] ,onDelete: Cascade) // Book's publisher
+
+  chapters     chapter[]    // One-to-many relation with chapters
+}
+
+model author {
+  id           String    @id @default(uuid()) @unique
+  name         String
+  photoUrl     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  books        book[]    // One-to-many relation with books
+}
+
+model publisher {
+  id           String    @id @default(uuid()) @unique
+  name         String
+  photoUrl     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  books        book[]    // One-to-many relation with books
+}
+
+model chapter {
+  id          String        @id @default(uuid()) @unique
+  title       String
+  bookId      String
+  book        book          @relation(fields: [bookId], references: [id] ,onDelete: Cascade) // Belongs to a book
+
+  subChapters subChapter[]  // One-to-many relation with sub-chapters
+}
+
+model subChapter {
+  id         String    @id @default(uuid()) @unique
+  title      String
+  chapterId  String
+  chapter    chapter   @relation(fields: [chapterId], references: [id],onDelete: Cascade) // Belongs to a chapter
+}

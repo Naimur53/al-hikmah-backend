@@ -1,0 +1,951 @@
+{
+  "info": {
+    "name": "API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Blog API",
+      "item": [
+        {
+          "name": "Get blog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blog",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blog"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "Search by title"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "description": "Search by description"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Exact match filtering for status"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/blog?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"value\",\n  \"description\": \"value\",\n  \"status\": \"value\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blog",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blog"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update blog",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"newValue\",\n  \"description\": \"newValue\",\n  \"status\": \"newValue\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blog/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blog",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete blog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blog/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blog",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BookCategory API",
+      "item": [
+        {
+          "name": "Get bookCategory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookCategory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookCategory"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "name",
+                  "value": "",
+                  "description": "Search by name"
+                },
+                {
+                  "key": "name",
+                  "value": "",
+                  "description": "Exact match filtering for name"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/bookCategory?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create bookCategory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"value\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookCategory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookCategory"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update bookCategory",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"newValue\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookCategory/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookCategory",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete bookCategory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookCategory/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookCategory",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User API",
+      "item": [
+        {
+          "name": "Get user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/user?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update user",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Book API",
+      "item": [
+        {
+          "name": "Get book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/book",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "book"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/book?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"value\",\n  \"photo\": \"value\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/book",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "book"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update book",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"newValue\",\n  \"photo\": \"newValue\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/book/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "book",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete book",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/book/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "book",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Author API",
+      "item": [
+        {
+          "name": "Get author",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/author",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "author"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/author?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create author",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/author",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "author"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update author",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/author/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "author",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete author",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/author/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "author",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Publisher API",
+      "item": [
+        {
+          "name": "Get publisher",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/publisher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publisher"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/publisher?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create publisher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/publisher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publisher"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update publisher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/publisher/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publisher",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete publisher",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/publisher/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "publisher",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chapter API",
+      "item": [
+        {
+          "name": "Get chapter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chapter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chapter"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/chapter?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create chapter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chapter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chapter"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update chapter",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chapter/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chapter",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete chapter",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chapter/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chapter",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SubChapter API",
+      "item": [
+        {
+          "name": "Get subChapter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/subChapter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subChapter"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/subChapter?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create subChapter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/subChapter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subChapter"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update subChapter",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/subChapter/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subChapter",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete subChapter",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/subChapter/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "subChapter",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist API",
+      "item": [
+        {
+          "name": "Get wishlist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            }
+          },
+          "description": "Supports pagination, searchTerm, and exact match fields. Example: `/wishlist?searchTerm=yourSearch&limit=10&page=1&title=someTitle`"
+        },
+        {
+          "name": "Create wishlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update wishlist",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                ":id"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
