@@ -78,7 +78,7 @@ model Wishlist {
 
 model BookCategory {
   id          String    @id @default(uuid()) @unique
-  name        String
+  name        String   @unique
   description String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -87,13 +87,18 @@ model BookCategory {
 
 model Book {
   id           String       @id @default(uuid()) @unique
-  name         String
+  name         String   @unique
   photo        String
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  keywords     String
+  description  String
+  docLink      String?
+  pdfLink      String?
+  isActive   Boolean @default(true)
 
-  categoryId   String?
-  category     BookCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Optional category for the book
+  categoryId   String
+  category     BookCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Optional category for the book
 
   authorId     String
   author       Author       @relation(fields: [authorId], references: [id], onDelete: Cascade) // Book's author
@@ -106,7 +111,7 @@ model Book {
 
 model Author {
   id           String    @id @default(uuid()) @unique
-  name         String
+  name         String   @unique
   photoUrl     String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

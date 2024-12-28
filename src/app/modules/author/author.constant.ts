@@ -1,9 +1,2 @@
-
-        export const authorSearchableFields = [ 
-          
-        ];
-        export const authorFilterAbleFields = [
-            
-          ];
-          
-        
+export const authorSearchableFields = ['name'];
+export const authorFilterAbleFields = ['name', 'id'];
