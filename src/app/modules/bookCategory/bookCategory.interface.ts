@@ -1,5 +1,3 @@
-
-        export type IBookCategoryFilters = {
-            searchTerm?: string;
-          }; 
-        
+export type IBookCategoryFilters = {
+  searchTerm?: string;
+};

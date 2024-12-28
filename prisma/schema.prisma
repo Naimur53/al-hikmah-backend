@@ -78,8 +78,7 @@ model Wishlist {
 
 model BookCategory {
   id          String    @id @default(uuid()) @unique
-  name        String   @unique
-  description String
+  name        String   @unique 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   books       Book[]    // One-to-many relation with books
@@ -121,8 +120,8 @@ model Author {
 
 model Publisher {
   id           String    @id @default(uuid()) @unique
-  name         String
-  photoUrl     String
+  name         String @unique
+  photoUrl     String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

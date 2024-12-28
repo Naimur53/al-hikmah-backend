@@ -1,9 +1,2 @@
-
-        export const bookCategorySearchableFields = [ 
-          
-        ];
-        export const bookCategoryFilterAbleFields = [
-            
-          ];
-          
-        
+export const bookCategorySearchableFields = ['name'];
+export const bookCategoryFilterAbleFields = ['name', 'id'];

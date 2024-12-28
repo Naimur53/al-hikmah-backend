@@ -1,5 +1,3 @@
-
-        export type IPublisherFilters = {
-            searchTerm?: string;
-          }; 
-        
+export type IPublisherFilters = {
+  searchTerm?: string;
+};

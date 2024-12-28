@@ -70,6 +70,15 @@ const getAllBookCategory = async (
 const createBookCategory = async (
   payload: BookCategory,
 ): Promise<BookCategory | null> => {
+  // chekc if the book category already exists
+  const bookCategory = await prisma.bookCategory.findUnique({
+    where: {
+      name: payload.name,
+    },
+  });
+  if (bookCategory) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Book Category already exists!');
+  }
   const newBookCategory = await prisma.bookCategory.create({
     data: payload,
   });

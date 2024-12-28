@@ -1,9 +1,2 @@
-
-        export const publisherSearchableFields = [ 
-          
-        ];
-        export const publisherFilterAbleFields = [
-            
-          ];
-          
-        
+export const publisherSearchableFields = ['name'];
+export const publisherFilterAbleFields = ['name', 'id'];
