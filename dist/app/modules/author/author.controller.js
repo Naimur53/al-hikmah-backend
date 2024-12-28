@@ -18,8 +18,8 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const author_service_1 = require("./author.service");
 const author_constant_1 = require("./author.constant");
+const author_service_1 = require("./author.service");
 const createAuthor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const AuthorData = req.body;
     const result = yield author_service_1.AuthorService.createAuthor(AuthorData);
@@ -31,10 +31,7 @@ const createAuthor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const getAllAuthor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.default)(req.query, [
-        'searchTerm',
-        ...author_constant_1.authorFilterAbleFields,
-    ]);
+    const filters = (0, pick_1.default)(req.query, ['searchTerm', ...author_constant_1.authorFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const result = yield author_service_1.AuthorService.getAllAuthor(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {

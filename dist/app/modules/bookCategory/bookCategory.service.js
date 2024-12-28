@@ -77,6 +77,15 @@ const getAllBookCategory = (filters, paginationOptions) => __awaiter(void 0, voi
     return output;
 });
 const createBookCategory = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // chekc if the book category already exists
+    const bookCategory = yield prisma_1.default.bookCategory.findUnique({
+        where: {
+            name: payload.name,
+        },
+    });
+    if (bookCategory) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Book Category already exists!');
+    }
     const newBookCategory = yield prisma_1.default.bookCategory.create({
         data: payload,
     });

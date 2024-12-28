@@ -54,11 +54,20 @@ model User {
   wishlist     Wishlist[] // One-to-one relation for a user's wishlist
 }
 
+enum EBlogStatus {
+ approved
+ pending
+ denied
+
+}
+
 model Blog {
   id          String    @id @default(uuid()) @unique
   title       String
   description String
-  status      String
+  thumbnail   String
+  content     String
+  status      EBlogStatus @default(pending)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

@@ -77,6 +77,15 @@ const getAllPublisher = (filters, paginationOptions) => __awaiter(void 0, void 0
     return output;
 });
 const createPublisher = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check is publisher exist with name
+    const publisherExist = yield prisma_1.default.publisher.findFirst({
+        where: {
+            name: payload.name,
+        },
+    });
+    if (publisherExist) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Publisher already exist with this');
+    }
     const newPublisher = yield prisma_1.default.publisher.create({
         data: payload,
     });

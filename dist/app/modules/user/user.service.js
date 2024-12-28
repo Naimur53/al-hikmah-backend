@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
+const client_1 = require("@prisma/client");
 const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
@@ -90,7 +91,34 @@ const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUser = (id, payload, requestedUserId) => __awaiter(void 0, void 0, void 0, function* () {
+    // check if the user exists
+    const requestedUser = yield prisma_1.default.user.findUnique({
+        where: {
+            id: requestedUserId,
+        },
+    });
+    if (!requestedUser) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    if (requestedUser.role === client_1.EUserRole.USER) {
+        if (requestedUser.id !== id) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update this user!');
+        }
+        // check if the user update role
+        if (payload.role) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update role!');
+        }
+        if (payload.isBlocked) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update isBlocked!');
+        }
+        if (payload.isVerified) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update isVerified!');
+        }
+    }
+    if (payload.password) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'You are not allowed to update password');
+    }
     const result = yield prisma_1.default.user.update({
         where: {
             id,

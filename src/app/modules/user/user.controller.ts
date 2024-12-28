@@ -2,6 +2,7 @@ import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
 import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
@@ -56,8 +57,12 @@ const updateUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
     const updateAbleData = req.body;
-
-    const result = await UserService.updateUser(id, updateAbleData);
+    const user = req.user as JwtPayload;
+    const result = await UserService.updateUser(
+      id,
+      updateAbleData,
+      user.userId,
+    );
 
     sendResponse<User>(res, {
       statusCode: httpStatus.OK,

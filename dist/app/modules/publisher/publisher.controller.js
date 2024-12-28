@@ -18,8 +18,8 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const publisher_service_1 = require("./publisher.service");
 const publisher_constant_1 = require("./publisher.constant");
+const publisher_service_1 = require("./publisher.service");
 const createPublisher = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const PublisherData = req.body;
     const result = yield publisher_service_1.PublisherService.createPublisher(PublisherData);
@@ -31,10 +31,7 @@ const createPublisher = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     });
 }));
 const getAllPublisher = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.default)(req.query, [
-        'searchTerm',
-        ...publisher_constant_1.publisherFilterAbleFields,
-    ]);
+    const filters = (0, pick_1.default)(req.query, ['searchTerm', ...publisher_constant_1.publisherFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const result = yield publisher_service_1.PublisherService.getAllPublisher(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {

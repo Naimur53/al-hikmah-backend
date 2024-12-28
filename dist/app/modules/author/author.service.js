@@ -77,6 +77,13 @@ const getAllAuthor = (filters, paginationOptions) => __awaiter(void 0, void 0, v
     return output;
 });
 const createAuthor = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check is book already in db with name
+    const isExits = yield prisma_1.default.author.findUnique({
+        where: { name: payload.name },
+    });
+    if (isExits) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Author name already exists');
+    }
     const newAuthor = yield prisma_1.default.author.create({
         data: payload,
     });

@@ -68,7 +68,6 @@ const sendEmail_1 = __importDefault(require("../../../helpers/sendEmail"));
 const EmailTemplates_1 = __importDefault(require("../../../shared/EmailTemplates"));
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const generatateOpt_1 = __importStar(require("../../../utils/generatateOpt"));
-const user_service_1 = require("../user/user.service");
 const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
     // checking is user buyer
     const { password: givenPassword } = user, rest = __rest(user, ["password"]);
@@ -417,8 +416,9 @@ const verifySignupToken = (token, userId) => __awaiter(void 0, void 0, void 0, f
     yield prisma_1.default.verificationOtp.deleteMany({
         where: { ownById: isUserExist.id },
     });
-    const result = yield user_service_1.UserService.updateUser(isUserExist.id, {
-        isVerified: true,
+    const result = yield prisma_1.default.user.update({
+        where: { id: isUserExist.id },
+        data: { isVerified: true },
     });
     if (!result) {
         new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'user not found');

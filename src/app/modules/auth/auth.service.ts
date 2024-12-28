@@ -10,7 +10,6 @@ import sendEmail from '../../../helpers/sendEmail';
 import EmailTemplates from '../../../shared/EmailTemplates';
 import prisma from '../../../shared/prisma';
 import generateOTP, { checkTimeOfOTP } from '../../../utils/generatateOpt';
-import { UserService } from '../user/user.service';
 import {
   IAdminLogin,
   IGoogleLogin,
@@ -486,8 +485,9 @@ const verifySignupToken = async (
   await prisma.verificationOtp.deleteMany({
     where: { ownById: isUserExist.id },
   });
-  const result = await UserService.updateUser(isUserExist.id, {
-    isVerified: true,
+  const result = await prisma.user.update({
+    where: { id: isUserExist.id },
+    data: { isVerified: true },
   });
   if (!result) {
     new ApiError(httpStatus.BAD_REQUEST, 'user not found');

@@ -1,9 +1,2 @@
-
-        export const userSearchableFields = [ 
-          
-        ];
-        export const userFilterAbleFields = [
-            
-          ];
-          
-        
+export const userSearchableFields = ['name'];
+export const userFilterAbleFields = ['id', 'email', 'name', 'role'];

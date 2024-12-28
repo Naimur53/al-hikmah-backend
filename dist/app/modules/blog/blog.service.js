@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogService = void 0;
+const client_1 = require("@prisma/client");
 const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
@@ -90,7 +91,33 @@ const getSingleBlog = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const updateBlog = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateBlog = (id, payload, requestUserId) => __awaiter(void 0, void 0, void 0, function* () {
+    // check if the blog exists
+    const blog = yield prisma_1.default.blog.findUnique({
+        where: {
+            id,
+        },
+    });
+    if (!blog) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Blog not found!');
+    }
+    // get rqeustusr info
+    const requestedUser = yield prisma_1.default.user.findUnique({
+        where: { id: requestUserId },
+    });
+    if (!requestedUser) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
+    }
+    // check if the user is the author of the blog
+    if (requestedUser.role === client_1.EUserRole.USER) {
+        if (payload.status === 'approved') {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not authorized to approved!');
+        }
+        //
+        if (requestUserId !== blog.authorId) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not authorized to update this blog!');
+        }
+    }
     const result = yield prisma_1.default.blog.update({
         where: {
             id,

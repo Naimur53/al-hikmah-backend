@@ -1,9 +1,2 @@
-
-        export const blogSearchableFields = [ 
-          
-        ];
-        export const blogFilterAbleFields = [
-            
-          ];
-          
-        
+export const blogSearchableFields = ['title', 'description'];
+export const blogFilterAbleFields = ['id'];

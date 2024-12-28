@@ -77,6 +77,29 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
     return output;
 });
 const createBook = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check is book exist with name
+    const isExits = yield prisma_1.default.book.findUnique({
+        where: { name: payload.name },
+    });
+    if (isExits) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Book name already exist!`);
+    }
+    // Check if category, author, and publisher exist in parallel
+    const [category, author, publisher] = yield Promise.all([
+        prisma_1.default.bookCategory.findUnique({ where: { id: payload.categoryId } }),
+        prisma_1.default.author.findUnique({ where: { id: payload.authorId } }),
+        prisma_1.default.publisher.findUnique({ where: { id: payload.publisherId } }),
+    ]);
+    // Validate existence of required references
+    if (!category) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Book Category not found!`);
+    }
+    if (!author) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Author not found!`);
+    }
+    if (!publisher) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Publisher not found!`);
+    }
     const newBook = yield prisma_1.default.book.create({
         data: payload,
     });

@@ -37,16 +37,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRoutes = void 0;
+const client_1 = require("@prisma/client");
 const express_1 = __importDefault(require("express"));
+const auth_1 = __importDefault(require("../../middlewares/auth"));
 const uploadImage_1 = __importStar(require("../../middlewares/uploadImage"));
 const validateRequest_1 = __importDefault(require("../../middlewares/validateRequest"));
 const user_controller_1 = require("./user.controller");
 const user_validation_1 = require("./user.validation");
 const router = express_1.default.Router();
-router.get('/', user_controller_1.UserController.getAllUser);
-router.get('/:id', user_controller_1.UserController.getSingleUser);
-router.post('/', (0, validateRequest_1.default)(user_validation_1.UserValidation.createValidation), user_controller_1.UserController.createUser);
+router.get('/', (0, auth_1.default)(client_1.EUserRole.ADMIN, client_1.EUserRole.SUPER_ADMIN), user_controller_1.UserController.getAllUser);
+router.get('/:id', (0, auth_1.default)(client_1.EUserRole.ADMIN, client_1.EUserRole.SUPER_ADMIN, client_1.EUserRole.USER), user_controller_1.UserController.getSingleUser);
+// router.post(
+//   '/',
+//   validateRequest(UserValidation.createValidation),
+//   UserController.createUser,
+// );
 router.post('/image-upload', uploadImage_1.uploadMulter.single('image'), uploadImage_1.default, user_controller_1.UserController.uploadSingleFile);
-router.patch('/:id', (0, validateRequest_1.default)(user_validation_1.UserValidation.updateValidation), user_controller_1.UserController.updateUser);
-router.delete('/:id', user_controller_1.UserController.deleteUser);
+router.patch('/:id', (0, auth_1.default)(client_1.EUserRole.ADMIN, client_1.EUserRole.SUPER_ADMIN, client_1.EUserRole.USER), (0, validateRequest_1.default)(user_validation_1.UserValidation.updateValidation), user_controller_1.UserController.updateUser);
+router.delete('/:id', (0, auth_1.default)(client_1.EUserRole.SUPER_ADMIN), user_controller_1.UserController.deleteUser);
 exports.UserRoutes = router;
