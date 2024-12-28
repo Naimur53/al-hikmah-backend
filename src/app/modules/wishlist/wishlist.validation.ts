@@ -1,16 +1,16 @@
 import { z } from 'zod';
 
-        const createValidation = z.object({
-          body: z.object({
-           
-          }),
-        });
-        const updateValidation = z.object({
-          body: z.object({ 
-          }),
-        });
-        export const WishlistValidation = {
-          createValidation,
-          updateValidation,
-        };
-        
+const createValidation = z.object({
+  body: z.object({
+    name: z.string({ required_error: 'Name is required' }),
+  }),
+});
+const updateValidation = z.object({
+  body: z.object({
+    name: z.string({ required_error: 'Name is required' }).optional(),
+  }),
+});
+export const WishlistValidation = {
+  createValidation,
+  updateValidation,
+};

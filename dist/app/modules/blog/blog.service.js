@@ -69,6 +69,23 @@ const getAllBlog = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             : {
                 createdAt: 'desc',
             },
+        select: {
+            id: true,
+            title: true,
+            thumbnail: true,
+            status: true,
+            authorId: true,
+            createdAt: true,
+            updatedAt: true,
+            description: true,
+            author: {
+                select: {
+                    id: true,
+                    name: true,
+                    photoUrl: true,
+                },
+            },
+        },
     });
     const total = yield prisma_1.default.blog.count();
     const output = {

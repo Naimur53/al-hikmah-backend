@@ -1,5 +1,3 @@
-
-        export type IWishlistFilters = {
-            searchTerm?: string;
-          }; 
-        
+export type IWishlistFilters = {
+  searchTerm?: string;
+};

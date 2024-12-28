@@ -33,7 +33,7 @@ const getAllBlog = catchAsync(async (req: Request, res: Response) => {
 
   const result = await BlogService.getAllBlog(filters, paginationOptions);
 
-  sendResponse<Blog[]>(res, {
+  sendResponse<Omit<Blog, 'content'>[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Blog retrieved successfully !',

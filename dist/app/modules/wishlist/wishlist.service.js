@@ -77,6 +77,13 @@ const getAllWishlist = (filters, paginationOptions) => __awaiter(void 0, void 0,
     return output;
 });
 const createWishlist = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // check is wilshlist exist with name and user
+    const isWishlistExist = yield prisma_1.default.wishlist.findFirst({
+        where: { userId: payload.userId, name: payload.name },
+    });
+    if (isWishlistExist) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Wishlist already exist!');
+    }
     const newWishlist = yield prisma_1.default.wishlist.create({
         data: payload,
     });

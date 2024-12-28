@@ -11,7 +11,7 @@ import { IBlogFilters } from './blog.interface';
 const getAllBlog = async (
   filters: IBlogFilters,
   paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<Blog[]>> => {
+): Promise<IGenericResponse<Omit<Blog, 'content'>[]>> => {
   const { page, limit, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -58,6 +58,23 @@ const getAllBlog = async (
         : {
             createdAt: 'desc',
           },
+    select: {
+      id: true,
+      title: true,
+      thumbnail: true,
+      status: true,
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+      description: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          photoUrl: true,
+        },
+      },
+    },
   });
   const total = await prisma.blog.count();
   const output = {
