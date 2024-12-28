@@ -18,16 +18,37 @@ enum ELoginProvider {
   normalEmail
 }
 
+model VerificationOtp {
+  id        String           @id @default(uuid())
+  type      EVerificationOtp
+  otp       Int
+  createdAt DateTime         @default(now())
+  ownById   String
+  ownBy     User             @relation(fields: [ownById], references: [id], onDelete: Cascade)
+}
+
+enum EVerificationOtp {
+  createUser
+  forgotPassword
+  deleteUser
+  adminLogin
+}
+
 model User {
   id           String    @id @default(uuid()) @unique
   name         String
   email        String    @unique
   password     String?
-  photoUrl     String?
+  gId         String?   @unique
+  photoUrl     String?   @default("https://i.ibb.co.com/MPbD6mc/User-icon-2-svg.png")
   loginProvider ELoginProvider @default(normalEmail)
   role         EUserRole @default(USER)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  isVerified   Boolean   @default(false)
+  isBlocked    Boolean   @default(false)
+  
+  VerificationOtp         VerificationOtp[]
 
   blogs        Blog[]    // Relation to blogs created by the user
   wishlist     Wishlist[] // One-to-one relation for a user's wishlist
@@ -116,7 +137,7 @@ model Chapter {
 model SubChapter {
   id         String    @id @default(uuid()) @unique
   title      String
-    createdAt    DateTime  @default(now())
+  createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chapterId  String
   chapter    Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
