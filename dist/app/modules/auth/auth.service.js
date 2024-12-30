@@ -156,6 +156,7 @@ const googleLoginUser = (payload) => __awaiter(void 0, void 0, void 0, function*
     const isUserExist = yield prisma_1.default.user.findUnique({
         where: { email: givenEmail },
     });
+    console.log(payload, isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.gId);
     if (!isUserExist) {
         // throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
         // create one
@@ -187,6 +188,7 @@ const googleLoginUser = (payload) => __awaiter(void 0, void 0, void 0, function*
         }
         else {
             // check is user was login with google
+            console.log('generateBycryptGid !== isUserExist.gId');
             if (generateBycryptGid !== isUserExist.gId) {
                 throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, 'User Gid does not match!');
             }

@@ -145,6 +145,7 @@ const googleLoginUser = async (
   const isUserExist = await prisma.user.findUnique({
     where: { email: givenEmail },
   });
+  console.log(payload, isUserExist?.gId);
 
   if (!isUserExist) {
     // throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
@@ -175,6 +176,7 @@ const googleLoginUser = async (
       user = updateUserGId;
     } else {
       // check is user was login with google
+      console.log('generateBycryptGid !== isUserExist.gId');
       if (generateBycryptGid !== isUserExist.gId) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'User Gid does not match!');
       }

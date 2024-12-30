@@ -68,6 +68,7 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             : {
                 createdAt: 'desc',
             },
+        include: { author: true, publisher: true, category: true },
     });
     const total = yield prisma_1.default.book.count();
     const output = {

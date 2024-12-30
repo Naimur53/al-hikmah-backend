@@ -58,6 +58,7 @@ const getAllBook = async (
         : {
             createdAt: 'desc',
           },
+    include: { author: true, publisher: true, category: true },
   });
   const total = await prisma.book.count();
   const output = {
