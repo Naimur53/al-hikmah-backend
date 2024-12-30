@@ -2,4 +2,4 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogFilterAbleFields = exports.blogSearchableFields = void 0;
 exports.blogSearchableFields = ['title', 'description'];
-exports.blogFilterAbleFields = ['id'];
+exports.blogFilterAbleFields = ['id', 'status'];
