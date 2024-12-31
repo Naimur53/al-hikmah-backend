@@ -115,6 +115,7 @@ model Book {
   publisher    Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade) // Book's publisher
 
   chapters     Chapter[]    // One-to-many relation with chapters
+  bookPages    BookPage[]   // One-to-many relation with book pages
 }
 
 model Author {
@@ -141,10 +142,12 @@ model Chapter {
   id          String        @id @default(uuid()) @unique
   title       String
   bookId      String
+  chapterNo   Int
   book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   subChapters SubChapter[]  // One-to-many relation with sub-chapters
+  bookPages   BookPage[]    // One-to-many relation with book pages
 }
 
 model SubChapter {
@@ -153,5 +156,24 @@ model SubChapter {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chapterId  String
+  subChapterNo Int
   chapter    Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
+  bookPages  BookPage[] // One-to-many relation with book pages
+}
+
+model BookPage {
+  id          String    @id @default(uuid()) @unique
+  page        Int
+  content     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookId      String
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
+
+  chapterId   String?
+  chapter     Chapter?   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
+  subChapterId String?
+  subChapter  SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade) // Belongs to a sub-chapter
+
 }
