@@ -1,5 +1,6 @@
-
-        export type IBookFilters = {
-            searchTerm?: string;
-          }; 
-        
+export type IBookFilters = {
+  searchTerm?: string;
+  author?: string;
+  category?: string;
+  publisher?: string;
+};

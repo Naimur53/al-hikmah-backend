@@ -15,10 +15,11 @@ const getAllBook = async (
   const { page, limit, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const { searchTerm, ...filterData } = filters;
+  const { searchTerm, author, publisher, category, ...filterData } = filters;
 
   const andCondition = [];
-
+  const theOrCondition = [];
+  console.log(filterData);
   if (searchTerm) {
     const searchAbleFields = bookSearchableFields.map(single => {
       const query = {
@@ -29,17 +30,65 @@ const getAllBook = async (
       };
       return query;
     });
-    andCondition.push({
-      OR: searchAbleFields,
-    });
+    theOrCondition.push(...searchAbleFields);
+  }
+
+  if (author || publisher || category) {
+    if (author) {
+      theOrCondition.push(
+        ...author.split(',').map((id: string) => {
+          return {
+            author: {
+              name: {
+                equals: id,
+              },
+            },
+          };
+        }),
+      );
+    }
+    if (publisher) {
+      theOrCondition.push(
+        ...publisher.split(',').map((id: string) => {
+          return {
+            publisher: {
+              name: {
+                equals: id,
+              },
+            },
+          };
+        }),
+      );
+    }
+    if (category) {
+      theOrCondition.push(
+        ...category.split(',').map((id: string) => {
+          return {
+            category: {
+              name: {
+                equals: id,
+              },
+            },
+          };
+        }),
+      );
+    }
+  }
+  if (theOrCondition.length > 0) {
+    andCondition.push({ OR: theOrCondition });
   }
   if (Object.keys(filters).length) {
     andCondition.push({
-      AND: Object.keys(filterData).map(key => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
+      AND: Object.keys(filterData).map(key => {
+        return {
+          [key]: {
+            equals:
+              key === 'isActive'
+                ? JSON.parse((filterData as any)[key])
+                : (filterData as any)[key],
+          },
+        };
+      }),
     });
   }
 
@@ -58,8 +107,10 @@ const getAllBook = async (
         : {
             createdAt: 'desc',
           },
-    include: { author: true, publisher: true, category: true },
+    // include: { author: true, publisher: true, category: true },
   });
+  console.log(result);
+
   const total = await prisma.book.count();
   const output = {
     data: result,
