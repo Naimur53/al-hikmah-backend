@@ -98,6 +98,14 @@ const updateUser = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
+  if (requestedUser.role === EUserRole.ADMIN) {
+    if (payload.role) {
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        'You are not allowed to update role!',
+      );
+    }
+  }
   if (requestedUser.role === EUserRole.USER) {
     if (requestedUser.id !== id) {
       throw new ApiError(
