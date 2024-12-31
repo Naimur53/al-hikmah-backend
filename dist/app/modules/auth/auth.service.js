@@ -554,16 +554,16 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     //verify token
     // invalid token - synchronous
     let verifiedToken = null;
-    console.log({ token });
     try {
         verifiedToken = jwtHelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.refresh_secret);
     }
     catch (err) {
         throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'Invalid Refresh Token');
     }
-    const { id: idToken } = verifiedToken;
+    const { userId: idToken } = verifiedToken;
     // checking deleted user's refresh token
-    const isUserExist = yield prisma_1.default.user.findFirst({ where: { id: idToken } });
+    console.log(verifiedToken);
+    const isUserExist = yield prisma_1.default.user.findUnique({ where: { id: idToken } });
     if (!isUserExist) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist');
     }

@@ -66,9 +66,77 @@ const getAllBookPage = async (
 };
 
 const createBookPage = async (payload: BookPage): Promise<BookPage | null> => {
+  // check if book page exist with value
+  const isExits = await prisma.bookPage.findFirst({
+    where: {
+      bookId: payload.bookId,
+      page: payload.page,
+      chapterId: payload.chapterId || null,
+      subChapterId: payload.subChapterId || null,
+    },
+  });
+  if (isExits) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Book Page already exist with this value!' + 'page no:' + payload.page,
+    );
+  }
+
   const newBookPage = await prisma.bookPage.create({
     data: payload,
   });
+  return newBookPage;
+};
+
+const bulkCreateBookPage = async (
+  payload: BookPage[],
+): Promise<Prisma.BatchPayload> => {
+  const bookId = payload[0].bookId;
+  const chapterId = payload[0].chapterId || null;
+  const subChapterId = payload[0].subChapterId || null;
+
+  payload.forEach(page => {
+    if (page.bookId !== bookId) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'BookId must be same for all pages!',
+      );
+    }
+    const getSingleChapter = page.chapterId || null;
+    if (subChapterId !== chapterId) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'ChapterId must be same for all pages!',
+      );
+    }
+    const getSingleSubChapter = page.subChapterId || null;
+    if (getSingleSubChapter !== subChapterId) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'SubChapterId must be same for all pages!',
+      );
+    }
+  });
+  // check if book page exist with value
+  const isExits = await prisma.bookPage.findMany({
+    where: {
+      bookId: payload[0].bookId,
+      page: {
+        in: payload.map(page => page.page),
+      },
+      chapterId: payload[0].chapterId || null,
+      subChapterId: payload[0].subChapterId || null,
+    },
+  });
+  if (isExits.length) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Book Page already exist with this value!' +
+        "page no's:" +
+        isExits.map(page => page.page).join(', '),
+    );
+  }
+  const newBookPage = await prisma.bookPage.createMany({ data: payload });
   return newBookPage;
 };
 
@@ -95,13 +163,38 @@ const updateBookPage = async (
 };
 
 const deleteBookPage = async (id: string): Promise<BookPage | null> => {
-  const result = await prisma.bookPage.delete({
-    where: { id },
+  return await prisma.$transaction(async prisma => {
+    // Find the page to delete
+    const pageToDelete = await prisma.bookPage.findUnique({
+      where: { id },
+    });
+
+    if (!pageToDelete) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+    }
+
+    const { page, bookId, chapterId, subChapterId } = pageToDelete;
+
+    // Delete the specified BookPage
+    const deletedPage = await prisma.bookPage.delete({
+      where: { id },
+    });
+
+    // Update the page numbers of subsequent pages
+    await prisma.bookPage.updateMany({
+      where: {
+        bookId, // Ensure it belongs to the same book
+        chapterId, // Optional: Ensure it's within the same chapter
+        subChapterId, // Optional: Ensure it's within the same sub-chapter
+        page: { gt: page }, // Update only pages after the deleted one
+      },
+      data: {
+        page: { decrement: 1 }, // Decrement the page number by 1
+      },
+    });
+
+    return deletedPage;
   });
-  if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
-  }
-  return result;
 };
 
 export const BookPageService = {
@@ -110,4 +203,5 @@ export const BookPageService = {
   updateBookPage,
   getSingleBookPage,
   deleteBookPage,
+  bulkCreateBookPage,
 };

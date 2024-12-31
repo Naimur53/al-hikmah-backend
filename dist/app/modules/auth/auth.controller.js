@@ -34,9 +34,7 @@ const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const auth_service_1 = require("./auth.service");
 const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
-    console.log('data', data);
     const output = yield auth_service_1.AuthService.createUser(data);
-    console.log('output', output);
     const { refreshToken, otp } = output, result = __rest(output, ["refreshToken", "otp"]);
     yield (0, sendEmail_1.default)({ to: result.user.email }, {
         subject: EmailTemplates_1.default.verify.subject,
@@ -123,7 +121,7 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         httpOnly: true,
     };
     res.cookie('refreshToken', refreshToken, cookieOptions);
-    console.log({
+    console.log('user login', {
         accessToken: result.accessToken,
         user: result.user,
         refreshToken: result.refreshToken,
@@ -196,6 +194,7 @@ const loginAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.body;
     const result = yield auth_service_1.AuthService.refreshToken(refreshToken);
+    console.log('refresh token', result);
     // set refresh token into cookie
     (0, sendResponse_1.default)(res, {
         statusCode: 200,

@@ -91,6 +91,26 @@ model BookCategory {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   books       Book[]    // One-to-many relation with books
+} 
+
+model Author {
+  id           String    @id @default(uuid()) @unique
+  name         String   @unique
+  photoUrl     String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  books        Book[]    // One-to-many relation with books
+}
+
+model Publisher {
+  id           String    @id @default(uuid()) @unique
+  name         String @unique
+  photoUrl     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  books        Book[]    // One-to-many relation with books
 }
 
 model Book {
@@ -116,26 +136,6 @@ model Book {
 
   chapters     Chapter[]    // One-to-many relation with chapters
   bookPages    BookPage[]   // One-to-many relation with book pages
-}
-
-model Author {
-  id           String    @id @default(uuid()) @unique
-  name         String   @unique
-  photoUrl     String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  books        Book[]    // One-to-many relation with books
-}
-
-model Publisher {
-  id           String    @id @default(uuid()) @unique
-  name         String @unique
-  photoUrl     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  books        Book[]    // One-to-many relation with books
 }
 
 model Chapter {
@@ -169,11 +169,10 @@ model BookPage {
   updatedAt    DateTime  @updatedAt
 
   bookId      String
-  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
 
   chapterId   String?
   chapter     Chapter?   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
   subChapterId String?
-  subChapter  SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade) // Belongs to a sub-chapter
-
+  subChapter  SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade)  
 }

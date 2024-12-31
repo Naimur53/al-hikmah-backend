@@ -66,7 +66,7 @@ const getAllChapter = (filters, paginationOptions) => __awaiter(void 0, void 0, 
                 [paginationOptions.sortBy]: paginationOptions.sortOrder,
             }
             : {
-                createdAt: 'desc',
+                chapterNo: 'asc',
             },
     });
     const total = yield prisma_1.default.chapter.count();
@@ -77,6 +77,30 @@ const getAllChapter = (filters, paginationOptions) => __awaiter(void 0, void 0, 
     return output;
 });
 const createChapter = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // is there is any bookPage found on bookPage with bookId
+    const book = yield prisma_1.default.book.findUnique({
+        where: { id: payload.bookId },
+        select: {
+            id: true,
+            bookPages: {
+                where: {
+                    bookId: payload.bookId,
+                    chapterId: null,
+                    subChapterId: null,
+                },
+                select: {
+                    id: true,
+                },
+                take: 1,
+            },
+        },
+    });
+    if (!book) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Book not found!');
+    }
+    if (book.bookPages.length > 0) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'This book already has a book page on core!');
+    }
     const newChapter = yield prisma_1.default.chapter.create({
         data: payload,
     });

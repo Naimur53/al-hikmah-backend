@@ -31,8 +31,10 @@ const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const book_constant_1 = require("./book.constant");
 const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
-    const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
+    const { searchTerm, author, publisher, category } = filters, filterData = __rest(filters, ["searchTerm", "author", "publisher", "category"]);
     const andCondition = [];
+    const theOrCondition = [];
+    console.log(filterData);
     if (searchTerm) {
         const searchAbleFields = book_constant_1.bookSearchableFields.map(single => {
             const query = {
@@ -43,17 +45,57 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             };
             return query;
         });
-        andCondition.push({
-            OR: searchAbleFields,
-        });
+        theOrCondition.push(...searchAbleFields);
+    }
+    if (author || publisher || category) {
+        if (author) {
+            theOrCondition.push(...author.split(',').map((id) => {
+                return {
+                    author: {
+                        name: {
+                            equals: id,
+                        },
+                    },
+                };
+            }));
+        }
+        if (publisher) {
+            theOrCondition.push(...publisher.split(',').map((id) => {
+                return {
+                    publisher: {
+                        name: {
+                            equals: id,
+                        },
+                    },
+                };
+            }));
+        }
+        if (category) {
+            theOrCondition.push(...category.split(',').map((id) => {
+                return {
+                    category: {
+                        name: {
+                            equals: id,
+                        },
+                    },
+                };
+            }));
+        }
+    }
+    if (theOrCondition.length > 0) {
+        andCondition.push({ OR: theOrCondition });
     }
     if (Object.keys(filters).length) {
         andCondition.push({
-            AND: Object.keys(filterData).map(key => ({
-                [key]: {
-                    equals: filterData[key],
-                },
-            })),
+            AND: Object.keys(filterData).map(key => {
+                return {
+                    [key]: {
+                        equals: key === 'isActive'
+                            ? JSON.parse(filterData[key])
+                            : filterData[key],
+                    },
+                };
+            }),
         });
     }
     const whereConditions = andCondition.length > 0 ? { AND: andCondition } : {};
@@ -68,8 +110,9 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             : {
                 createdAt: 'desc',
             },
-        include: { author: true, publisher: true, category: true },
+        // include: { author: true, publisher: true, category: true },
     });
+    console.log(result);
     const total = yield prisma_1.default.book.count();
     const output = {
         data: result,

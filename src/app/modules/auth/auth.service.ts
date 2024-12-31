@@ -664,7 +664,6 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   //verify token
   // invalid token - synchronous
   let verifiedToken = null;
-  console.log({ token });
   try {
     verifiedToken = jwtHelpers.verifyToken(
       token,
@@ -674,10 +673,10 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     throw new ApiError(httpStatus.FORBIDDEN, 'Invalid Refresh Token');
   }
 
-  const { id: idToken } = verifiedToken;
+  const { userId: idToken } = verifiedToken;
   // checking deleted user's refresh token
-
-  const isUserExist = await prisma.user.findFirst({ where: { id: idToken } });
+  console.log(verifiedToken);
+  const isUserExist = await prisma.user.findUnique({ where: { id: idToken } });
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }

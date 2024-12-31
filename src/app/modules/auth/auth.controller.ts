@@ -18,9 +18,7 @@ import { AuthService } from './auth.service';
 const createUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
-    console.log('data', data);
     const output = await AuthService.createUser(data);
-    console.log('output', output);
     const { refreshToken, otp, ...result } = output;
 
     await sendEmail(
@@ -129,7 +127,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   };
 
   res.cookie('refreshToken', refreshToken, cookieOptions);
-  console.log({
+  console.log('user login', {
     accessToken: result.accessToken,
     user: result.user,
     refreshToken: result.refreshToken,
@@ -212,7 +210,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
 
   const result = await AuthService.refreshToken(refreshToken);
-
+  console.log('refresh token', result);
   // set refresh token into cookie
 
   sendResponse<IRefreshTokenResponse>(res, {

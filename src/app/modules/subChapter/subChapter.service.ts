@@ -76,6 +76,13 @@ const createSubChapter = async (
     select: {
       id: true,
       bookPages: {
+        where: {
+          chapterId: payload.chapterId,
+          subChapterId: null,
+        },
+        select: {
+          id: true,
+        },
         take: 1,
       },
     },

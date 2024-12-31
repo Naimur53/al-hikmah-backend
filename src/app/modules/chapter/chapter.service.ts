@@ -75,6 +75,11 @@ const createChapter = async (payload: Chapter): Promise<Chapter | null> => {
     select: {
       id: true,
       bookPages: {
+        where: {
+          bookId: payload.bookId,
+          chapterId: null,
+          subChapterId: null,
+        },
         select: {
           id: true,
         },

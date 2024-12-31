@@ -101,6 +101,11 @@ const updateUser = (id, payload, requestedUserId) => __awaiter(void 0, void 0, v
     if (!requestedUser) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
     }
+    if (requestedUser.role === client_1.EUserRole.ADMIN) {
+        if (payload.role) {
+            throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update role!');
+        }
+    }
     if (requestedUser.role === client_1.EUserRole.USER) {
         if (requestedUser.id !== id) {
             throw new ApiError_1.default(http_status_1.default.FORBIDDEN, 'You are not allowed to update this user!');

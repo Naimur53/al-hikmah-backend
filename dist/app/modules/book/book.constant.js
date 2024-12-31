@@ -6,6 +6,10 @@ exports.bookFilterAbleFields = [
     'name',
     'id',
     'categoryId',
+    'author',
+    'publisher',
+    'category',
     'authorId',
     'publisherId',
+    'isActive',
 ];

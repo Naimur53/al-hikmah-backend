@@ -10,6 +10,7 @@ import { WishlistRoutes } from '../modules/wishlist/wishlist.router';
 
 import express from 'express';
 import { AuthRoutes } from '../modules/auth/auth.route';
+import { BookPageRoutes } from '../modules/bookPage/bookPage.router';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -62,6 +63,10 @@ const moduleRoutes = [
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/bookPage',
+    route: BookPageRoutes,
   },
 ];
 
