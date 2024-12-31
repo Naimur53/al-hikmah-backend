@@ -7,6 +7,141 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model VerificationOtp {
+  id        String           @id @default(uuid())
+  type      EVerificationOtp
+  otp       Int
+  createdAt DateTime         @default(now())
+  ownById   String
+  ownBy     User             @relation(fields: [ownById], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id              String            @id @unique @default(uuid())
+  name            String
+  email           String            @unique
+  password        String?
+  photoUrl        String?           @default("https://i.ibb.co.com/MPbD6mc/User-icon-2-svg.png")
+  loginProvider   ELoginProvider    @default(normalEmail)
+  role            EUserRole         @default(USER)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  isBlocked       Boolean           @default(false)
+  isVerified      Boolean           @default(false)
+  gId             String?           @unique
+  blogs           Blog[]
+  VerificationOtp VerificationOtp[]
+  wishlist        Wishlist[]
+}
+
+model Blog {
+  id          String      @id @unique @default(uuid())
+  title       String
+  description String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  authorId    String
+  content     String
+  thumbnail   String
+  status      EBlogStatus @default(pending)
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Wishlist {
+  id        String   @id @unique @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BookCategory {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Author {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  photoUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Publisher {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  photoUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Book {
+  id          String       @id @unique @default(uuid())
+  name        String       @unique
+  photo       String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  categoryId  String
+  authorId    String
+  publisherId String
+  description String
+  docLink     String?
+  keywords    String
+  pdfLink     String?
+  isActive    Boolean      @default(true)
+  author      Author       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category    BookCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  publisher   Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+  bookPages   BookPage[]
+  chapters    Chapter[]
+}
+
+model Chapter {
+  id          String       @id @unique @default(uuid())
+  title       String
+  bookId      String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  chapterNo   Int
+  bookPages   BookPage[]
+  book        Book         @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  subChapters SubChapter[]
+}
+
+model SubChapter {
+  id           String     @id @unique @default(uuid())
+  title        String
+  chapterId    String
+    description String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  subChapterNo Int
+  bookPages    BookPage[]
+  chapter      Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}
+
+model BookPage {
+  id           String      @id @unique @default(uuid())
+  page         Int
+  content      String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  bookId       String
+  chapterId    String?
+  subChapterId String?
+  book         Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  chapter      Chapter?    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  subChapter   SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade)
+}
+
 enum EUserRole {
   SUPER_ADMIN
   ADMIN
@@ -18,15 +153,6 @@ enum ELoginProvider {
   normalEmail
 }
 
-model VerificationOtp {
-  id        String           @id @default(uuid())
-  type      EVerificationOtp
-  otp       Int
-  createdAt DateTime         @default(now())
-  ownById   String
-  ownBy     User             @relation(fields: [ownById], references: [id], onDelete: Cascade)
-}
-
 enum EVerificationOtp {
   createUser
   forgotPassword
@@ -34,145 +160,8 @@ enum EVerificationOtp {
   adminLogin
 }
 
-model User {
-  id           String    @id @default(uuid()) @unique
-  name         String
-  email        String    @unique
-  password     String?
-  gId         String?   @unique
-  photoUrl     String?   @default("https://i.ibb.co.com/MPbD6mc/User-icon-2-svg.png")
-  loginProvider ELoginProvider @default(normalEmail)
-  role         EUserRole @default(USER)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  isVerified   Boolean   @default(false)
-  isBlocked    Boolean   @default(false)
-  
-  VerificationOtp         VerificationOtp[]
-
-  blogs        Blog[]    // Relation to blogs created by the user
-  wishlist     Wishlist[] // One-to-one relation for a user's wishlist
-}
-
 enum EBlogStatus {
- approved
- pending
- denied
-
-}
-
-model Blog {
-  id          String    @id @default(uuid()) @unique
-  title       String
-  description String
-  thumbnail   String
-  content     String
-  status      EBlogStatus @default(pending)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  authorId    String
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade) // Author of the blog
-}
-
-model Wishlist {
-  id        String    @id @default(uuid()) @unique
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Wishlist belongs to a user
-}
-
-model BookCategory {
-  id          String    @id @default(uuid()) @unique
-  name        String   @unique 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  books       Book[]    // One-to-many relation with books
-} 
-
-model Author {
-  id           String    @id @default(uuid()) @unique
-  name         String   @unique
-  photoUrl     String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  books        Book[]    // One-to-many relation with books
-}
-
-model Publisher {
-  id           String    @id @default(uuid()) @unique
-  name         String @unique
-  photoUrl     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  books        Book[]    // One-to-many relation with books
-}
-
-model Book {
-  id           String       @id @default(uuid()) @unique
-  name         String   @unique
-  photo        String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  keywords     String
-  description  String
-  docLink      String?
-  pdfLink      String?
-  isActive   Boolean @default(true)
-
-  categoryId   String
-  category     BookCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Optional category for the book
-
-  authorId     String
-  author       Author       @relation(fields: [authorId], references: [id], onDelete: Cascade) // Book's author
-
-  publisherId  String
-  publisher    Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade) // Book's publisher
-
-  chapters     Chapter[]    // One-to-many relation with chapters
-  bookPages    BookPage[]   // One-to-many relation with book pages
-}
-
-model Chapter {
-  id          String        @id @default(uuid()) @unique
-  title       String
-  bookId      String
-  chapterNo   Int
-  book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  subChapters SubChapter[]  // One-to-many relation with sub-chapters
-  bookPages   BookPage[]    // One-to-many relation with book pages
-}
-
-model SubChapter {
-  id         String    @id @default(uuid()) @unique
-  title      String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  chapterId  String
-  subChapterNo Int
-  chapter    Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
-  bookPages  BookPage[] // One-to-many relation with book pages
-}
-
-model BookPage {
-  id          String    @id @default(uuid()) @unique
-  page        Int
-  content     String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  bookId      String
-  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade) // Belongs to a book
-
-  chapterId   String?
-  chapter     Chapter?   @relation(fields: [chapterId], references: [id], onDelete: Cascade) // Belongs to a chapter
-  subChapterId String?
-  subChapter  SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade)  
+  approved
+  pending
+  denied
 }

@@ -14,5 +14,6 @@ router.get('/:id', bookPage_controller_1.BookPageController.getSingleBookPage);
 router.post('/', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.createValidation), bookPage_controller_1.BookPageController.createBookPage);
 router.post('/bulk', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.bulkCreateValidation), bookPage_controller_1.BookPageController.bulkCreateBookPage);
 router.patch('/:id', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.updateValidation), bookPage_controller_1.BookPageController.updateBookPage);
+router.delete('/bulk', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.bulkDeleteValidation), bookPage_controller_1.BookPageController.bulkDeleteBookPage);
 router.delete('/:id', bookPage_controller_1.BookPageController.deleteBookPage);
 exports.BookPageRoutes = router;

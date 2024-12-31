@@ -37,8 +37,17 @@ const bulkCreateValidation = z.object({
     }),
   ),
 });
+const bulkDeleteValidation = z.object({
+  body: z.array(
+    z.string({
+      required_error: 'BookPageId is required',
+    }),
+  ),
+});
+
 export const BookPageValidation = {
   createValidation,
   updateValidation,
   bulkCreateValidation,
+  bulkDeleteValidation,
 };

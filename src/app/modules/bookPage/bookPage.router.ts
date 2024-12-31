@@ -23,6 +23,11 @@ router.patch(
   validateRequest(BookPageValidation.updateValidation),
   BookPageController.updateBookPage,
 );
+router.delete(
+  '/bulk',
+  validateRequest(BookPageValidation.bulkDeleteValidation),
+  BookPageController.bulkDeleteBookPage,
+);
 router.delete('/:id', BookPageController.deleteBookPage);
 
 export const BookPageRoutes = router;

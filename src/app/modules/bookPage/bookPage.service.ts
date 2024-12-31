@@ -197,6 +197,60 @@ const deleteBookPage = async (id: string): Promise<BookPage | null> => {
   });
 };
 
+const bulkDeleteBookPage = async (ids: string[]): Promise<BookPage[]> => {
+  return await prisma.$transaction(async prisma => {
+    // Find all pages to delete
+    const pagesToDelete = await prisma.bookPage.findMany({
+      where: { id: { in: ids } },
+    });
+
+    if (!pagesToDelete.length) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        'No BookPages found for the provided IDs!',
+      );
+    }
+
+    // Delete the specified BookPages
+    const deletedPages = await prisma.bookPage.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    // Group pages by bookId, chapterId, and subChapterId to update independently
+    const updates = pagesToDelete.reduce(
+      (acc, page) => {
+        const key = `${page.bookId}-${page.chapterId || 'null'}-${page.subChapterId || 'null'}`;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(page);
+        return acc;
+      },
+      {} as Record<string, BookPage[]>,
+    );
+
+    // For each group, update subsequent page numbers
+    for (const [key, pages] of Object.entries(updates)) {
+      const { bookId, chapterId, subChapterId } = pages[0];
+      const lowestPage = Math.min(...pages.map(p => p.page));
+
+      await prisma.bookPage.updateMany({
+        where: {
+          bookId,
+          chapterId: chapterId || null, // Handle null values
+          subChapterId: subChapterId || null,
+          page: { gt: lowestPage },
+        },
+        data: {
+          page: { decrement: pages.length }, // Decrement page numbers by the number of deleted pages
+        },
+      });
+    }
+
+    return pagesToDelete; // Return the deleted pages
+  });
+};
+
 export const BookPageService = {
   getAllBookPage,
   createBookPage,
@@ -204,4 +258,5 @@ export const BookPageService = {
   getSingleBookPage,
   deleteBookPage,
   bulkCreateBookPage,
+  bulkDeleteBookPage,
 };

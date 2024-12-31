@@ -83,6 +83,16 @@ const deleteBookPage = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const bulkDeleteBookPage = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const ids = req.body;
+    const result = yield bookPage_service_1.BookPageService.bulkDeleteBookPage(ids);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'BookPage deleted successfully!',
+        data: result,
+    });
+}));
 exports.BookPageController = {
     getAllBookPage,
     createBookPage,
@@ -90,4 +100,5 @@ exports.BookPageController = {
     getSingleBookPage,
     deleteBookPage,
     bulkCreateBookPage,
+    bulkDeleteBookPage,
 };
