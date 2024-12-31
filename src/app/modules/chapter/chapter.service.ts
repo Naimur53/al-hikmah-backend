@@ -96,6 +96,20 @@ const createChapter = async (payload: Chapter): Promise<Chapter | null> => {
       'This book already has a book page on core!',
     );
   }
+  // before create check does the chapterNo already exist
+
+  const isExist = await prisma.chapter.findFirst({
+    where: {
+      bookId: payload.bookId,
+      chapterNo: payload.chapterNo,
+    },
+  });
+  if (isExist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Chapter No :${payload.chapterNo} already exist with this book!`,
+    );
+  }
   const newChapter = await prisma.chapter.create({
     data: payload,
   });

@@ -109,7 +109,6 @@ const getAllBook = async (
           },
     // include: { author: true, publisher: true, category: true },
   });
-  console.log(result);
 
   const total = await prisma.book.count();
   const output = {
@@ -160,6 +159,62 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
   });
   return result;
 };
+const getSingleBookByName = async (name: string): Promise<Book | null> => {
+  console.log(name, name.split('-').join(' '));
+  const result = await prisma.book.findUnique({
+    where: {
+      name: name.includes('-') ? name.split('-').join(' ') : name,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      keywords: true,
+      photo: true,
+      createdAt: true,
+      updatedAt: true,
+      docLink: true,
+      isActive: true,
+      pdfLink: true,
+      author: true,
+      publisher: true,
+      category: true,
+      authorId: true,
+      publisherId: true,
+      categoryId: true,
+      chapters: {
+        orderBy: {
+          chapterNo: 'asc',
+        },
+        select: {
+          id: true,
+          title: true,
+          bookId: true,
+          description: true,
+          createdAt: true,
+          chapterNo: true,
+          updatedAt: true,
+          subChapters: {
+            orderBy: {
+              subChapterNo: 'asc',
+            },
+            select: {
+              id: true,
+              description: true,
+              title: true,
+              chapterId: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  console.log(result);
+  return result;
+};
 
 const updateBook = async (
   id: string,
@@ -190,4 +245,5 @@ export const BookService = {
   updateBook,
   getSingleBook,
   deleteBook,
+  getSingleBookByName,
 };

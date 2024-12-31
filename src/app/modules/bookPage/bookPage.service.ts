@@ -75,6 +75,7 @@ const createBookPage = async (payload: BookPage): Promise<BookPage | null> => {
       subChapterId: payload.subChapterId || null,
     },
   });
+
   if (isExits) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -82,6 +83,34 @@ const createBookPage = async (payload: BookPage): Promise<BookPage | null> => {
     );
   }
 
+  const isAnyExits = await prisma.book.findFirst({
+    where: {
+      id: payload.bookId,
+    },
+    select: {
+      chapters: {
+        select: {
+          id: true,
+          subChapters: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        take: 1,
+      },
+    },
+  });
+  if (
+    isAnyExits?.chapters.length &&
+    isAnyExits.chapters[0].subChapters?.length &&
+    !payload.subChapterId
+  ) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'SubChapterId is required!');
+  }
+  if (isAnyExits?.chapters.length && !payload.chapterId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'ChapterId is required!');
+  }
   const newBookPage = await prisma.bookPage.create({
     data: payload,
   });
@@ -141,6 +170,17 @@ const bulkCreateBookPage = async (
 };
 
 const getSingleBookPage = async (id: string): Promise<BookPage | null> => {
+  const result = await prisma.bookPage.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+const getSingleBookPageByName = async (
+  id: string,
+): Promise<BookPage | null> => {
+  console.log(id);
   const result = await prisma.bookPage.findUnique({
     where: {
       id,
@@ -259,4 +299,5 @@ export const BookPageService = {
   deleteBookPage,
   bulkCreateBookPage,
   bulkDeleteBookPage,
+  getSingleBookPageByName,
 };

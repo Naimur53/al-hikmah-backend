@@ -5,6 +5,10 @@ import { BookPageValidation } from './bookPage.validation';
 const router = express.Router();
 
 router.get('/', BookPageController.getAllBookPage);
+router.get(
+  '/get-single-book-by-name/:name',
+  BookPageController.getSingleBookPageByName,
+);
 router.get('/:id', BookPageController.getSingleBookPage);
 
 router.post(

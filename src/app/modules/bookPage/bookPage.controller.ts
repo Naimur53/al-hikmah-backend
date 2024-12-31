@@ -67,6 +67,20 @@ const getSingleBookPage: RequestHandler = catchAsync(
     });
   },
 );
+const getSingleBookPageByName: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const name = req.params.name;
+
+    const result = await BookPageService.getSingleBookPageByName(name);
+
+    sendResponse<BookPage>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'BookPage retrieved  successfully!',
+      data: result,
+    });
+  },
+);
 
 const updateBookPage: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -120,4 +134,5 @@ export const BookPageController = {
   deleteBookPage,
   bulkCreateBookPage,
   bulkDeleteBookPage,
+  getSingleBookPageByName,
 };

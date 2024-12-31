@@ -7,6 +7,10 @@ import { BookValidation } from './book.validation';
 const router = express.Router();
 
 router.get('/', BookController.getAllBook);
+router.get(
+  '/get-single-book-by-name/:name',
+  BookController.getSingleBookByName,
+);
 router.get('/:id', BookController.getSingleBook);
 
 router.post(

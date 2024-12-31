@@ -210,7 +210,6 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
 
   const result = await AuthService.refreshToken(refreshToken);
-  console.log('refresh token', result);
   // set refresh token into cookie
 
   sendResponse<IRefreshTokenResponse>(res, {

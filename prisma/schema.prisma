@@ -85,6 +85,7 @@ model Publisher {
 model Book {
   id          String       @id @unique @default(uuid())
   name        String       @unique
+  banglaName  String
   photo       String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -93,6 +94,7 @@ model Book {
   publisherId String
   description String
   docLink     String?
+  totalRead   Int          @default(0)
   keywords    String
   pdfLink     String?
   isActive    Boolean      @default(true)

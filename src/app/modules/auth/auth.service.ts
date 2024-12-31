@@ -675,7 +675,6 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
   const { userId: idToken } = verifiedToken;
   // checking deleted user's refresh token
-  console.log(verifiedToken);
   const isUserExist = await prisma.user.findUnique({ where: { id: idToken } });
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');

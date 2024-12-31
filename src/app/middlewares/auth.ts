@@ -19,7 +19,7 @@ const auth =
       let verifiedUser = null;
 
       verifiedUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret);
-      console.log({ verifiedUser });
+
       const isUserExist = await prisma.user.findUnique({
         where: { id: verifiedUser.userId },
         select: { id: true, email: true, isBlocked: true, role: true },
