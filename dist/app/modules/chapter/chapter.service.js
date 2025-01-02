@@ -162,7 +162,7 @@ const deleteChapter = (id) => __awaiter(void 0, void 0, void 0, function* () {
             where: { id },
         });
         if (!chapterToDelete) {
-            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'BookPage not found!');
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'chapter not found!');
         }
         const { bookId, chapterNo } = chapterToDelete;
         // Delete the specified BookPage

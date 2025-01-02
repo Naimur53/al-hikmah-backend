@@ -168,7 +168,7 @@ const deleteChapter = async (id: string): Promise<Chapter | null> => {
     });
 
     if (!chapterToDelete) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+      throw new ApiError(httpStatus.NOT_FOUND, 'chapter not found!');
     }
 
     const { bookId, chapterNo } = chapterToDelete;
