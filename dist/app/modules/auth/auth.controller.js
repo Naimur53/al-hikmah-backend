@@ -194,7 +194,6 @@ const loginAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.body;
     const result = yield auth_service_1.AuthService.refreshToken(refreshToken);
-    console.log('refresh token', result);
     // set refresh token into cookie
     (0, sendResponse_1.default)(res, {
         statusCode: 200,

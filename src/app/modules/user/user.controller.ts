@@ -8,6 +8,7 @@ import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { userFilterAbleFields } from './user.constant';
+import { IAdminOverview } from './user.interface';
 import { UserService } from './user.service';
 const createUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -95,6 +96,20 @@ const uploadSingleFile: RequestHandler = catchAsync(async (req, res) => {
     data: { url: data.uploadedImageUrl },
   });
 });
+
+const getAdminOverview: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.getAdminOverview();
+
+    sendResponse<IAdminOverview>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Admin overview retrieved  successfully!',
+      data: result,
+    });
+  },
+);
+
 export const UserController = {
   getAllUser,
   createUser,
@@ -102,4 +117,5 @@ export const UserController = {
   getSingleUser,
   deleteUser,
   uploadSingleFile,
+  getAdminOverview,
 };

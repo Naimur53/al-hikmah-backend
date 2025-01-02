@@ -141,10 +141,31 @@ const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return result;
 });
+const getAdminOverview = () => __awaiter(void 0, void 0, void 0, function* () {
+    const [totalUser, totalBook, totalBlog, totalNewsletter, totalAuthor, totalPublisher, totalCategory,] = yield Promise.all([
+        prisma_1.default.user.count(),
+        prisma_1.default.book.count(),
+        prisma_1.default.blog.count(),
+        prisma_1.default.newsLetter.count(),
+        prisma_1.default.author.count(),
+        prisma_1.default.publisher.count(),
+        prisma_1.default.bookCategory.count(),
+    ]);
+    return {
+        totalUser,
+        totalBook,
+        totalBlog,
+        totalNewsletter,
+        totalAuthor,
+        totalPublisher,
+        totalCategory,
+    };
+});
 exports.UserService = {
     getAllUser,
     createUser,
     updateUser,
     getSingleUser,
     deleteUser,
+    getAdminOverview,
 };

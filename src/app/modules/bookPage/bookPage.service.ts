@@ -36,14 +36,19 @@ const getAllBookPage = async (
   if (Object.keys(filters).length) {
     andCondition.push({
       AND: Object.entries(filterData).map(([field, value]) => {
-        return { [field]: value };
+        return {
+          [field]:
+            value === null || value === 'undefined' || value === 'null'
+              ? null
+              : { equals: value },
+        };
       }),
     });
   }
 
   const whereConditions: Prisma.BookPageWhereInput =
     andCondition.length > 0 ? { AND: andCondition } : {};
-
+  console.log(andCondition[0]);
   const result = await prisma.bookPage.findMany({
     where: whereConditions,
     skip,
@@ -56,8 +61,40 @@ const getAllBookPage = async (
         : {
             page: 'asc',
           },
+    select: {
+      id: true,
+      bookId: true,
+      page: true,
+      chapterId: true,
+      subChapterId: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      book: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      chapter: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          chapterNo: true,
+        },
+      },
+      subChapter: {
+        select: {
+          id: true,
+          title: true,
+          subChapterNo: true,
+          description: true,
+        },
+      },
+    },
   });
-  const total = await prisma.bookPage.count();
+  const total = await prisma.bookPage.count({ where: whereConditions });
   const output = {
     data: result,
     meta: { page, limit, total },
@@ -193,6 +230,27 @@ const updateBookPage = async (
   id: string,
   payload: Partial<BookPage>,
 ): Promise<BookPage | null> => {
+  const isExists = await prisma.bookPage.findUnique({ where: { id } });
+  if (!isExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+  }
+  if (payload.page && payload.page !== isExists.page) {
+    return await prisma.$transaction(async tx => {
+      await tx.bookPage.updateMany({
+        where: {
+          bookId: isExists.bookId,
+          chapterId: isExists.chapterId,
+          subChapterId: isExists.subChapterId,
+          page: { gte: payload.page },
+        },
+        data: { page: { increment: 1 } },
+      });
+      return await tx.bookPage.update({
+        where: { id },
+        data: { page: payload.page },
+      });
+    });
+  }
   const result = await prisma.bookPage.update({
     where: {
       id,

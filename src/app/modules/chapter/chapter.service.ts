@@ -59,7 +59,7 @@ const getAllChapter = async (
             chapterNo: 'asc',
           },
   });
-  const total = await prisma.chapter.count();
+  const total = await prisma.chapter.count({ where: whereConditions });
   const output = {
     data: result,
     meta: { page, limit, total },
@@ -129,6 +129,28 @@ const updateChapter = async (
   id: string,
   payload: Partial<Chapter>,
 ): Promise<Chapter | null> => {
+  const isExist = await prisma.chapter.findUnique({ where: { id } });
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Chapter not found!');
+  }
+  if (payload.chapterNo && isExist.chapterNo !== payload.chapterNo) {
+    return await prisma.$transaction(async tx => {
+      await tx.chapter.updateMany({
+        where: {
+          bookId: isExist.bookId,
+          chapterNo: {
+            gte: payload.chapterNo,
+          },
+        },
+        data: {
+          chapterNo: {
+            increment: 1,
+          },
+        },
+      });
+      return await tx.chapter.update({ where: { id }, data: payload });
+    });
+  }
   const result = await prisma.chapter.update({
     where: {
       id,
@@ -139,13 +161,35 @@ const updateChapter = async (
 };
 
 const deleteChapter = async (id: string): Promise<Chapter | null> => {
-  const result = await prisma.chapter.delete({
-    where: { id },
+  return await prisma.$transaction(async prisma => {
+    // Find the page to delete
+    const chapterToDelete = await prisma.chapter.findUnique({
+      where: { id },
+    });
+
+    if (!chapterToDelete) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+    }
+
+    const { bookId, chapterNo } = chapterToDelete;
+
+    // Delete the specified BookPage
+    const deletedChapter = await prisma.chapter.delete({
+      where: { id },
+    });
+
+    // Update the page numbers of subsequent pages
+    await prisma.chapter.updateMany({
+      where: {
+        bookId,
+        chapterNo: { gt: chapterNo }, // Update only pages after the deleted one
+      },
+      data: {
+        chapterNo: { decrement: 1 }, // Decrement the page number by 1
+      },
+    });
+    return deletedChapter;
   });
-  if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Chapter not found!');
-  }
-  return result;
 };
 
 export const ChapterService = {

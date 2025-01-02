@@ -69,7 +69,7 @@ const getAllChapter = (filters, paginationOptions) => __awaiter(void 0, void 0, 
                 chapterNo: 'asc',
             },
     });
-    const total = yield prisma_1.default.chapter.count();
+    const total = yield prisma_1.default.chapter.count({ where: whereConditions });
     const output = {
         data: result,
         meta: { page, limit, total },
@@ -101,6 +101,16 @@ const createChapter = (payload) => __awaiter(void 0, void 0, void 0, function* (
     if (book.bookPages.length > 0) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'This book already has a book page on core!');
     }
+    // before create check does the chapterNo already exist
+    const isExist = yield prisma_1.default.chapter.findFirst({
+        where: {
+            bookId: payload.bookId,
+            chapterNo: payload.chapterNo,
+        },
+    });
+    if (isExist) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Chapter No :${payload.chapterNo} already exist with this book!`);
+    }
     const newChapter = yield prisma_1.default.chapter.create({
         data: payload,
     });
@@ -115,6 +125,28 @@ const getSingleChapter = (id) => __awaiter(void 0, void 0, void 0, function* () 
     return result;
 });
 const updateChapter = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield prisma_1.default.chapter.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Chapter not found!');
+    }
+    if (payload.chapterNo && isExist.chapterNo !== payload.chapterNo) {
+        return yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield tx.chapter.updateMany({
+                where: {
+                    bookId: isExist.bookId,
+                    chapterNo: {
+                        gte: payload.chapterNo,
+                    },
+                },
+                data: {
+                    chapterNo: {
+                        increment: 1,
+                    },
+                },
+            });
+            return yield tx.chapter.update({ where: { id }, data: payload });
+        }));
+    }
     const result = yield prisma_1.default.chapter.update({
         where: {
             id,
@@ -124,13 +156,31 @@ const updateChapter = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 const deleteChapter = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.chapter.delete({
-        where: { id },
-    });
-    if (!result) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Chapter not found!');
-    }
-    return result;
+    return yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        // Find the page to delete
+        const chapterToDelete = yield prisma.chapter.findUnique({
+            where: { id },
+        });
+        if (!chapterToDelete) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'BookPage not found!');
+        }
+        const { bookId, chapterNo } = chapterToDelete;
+        // Delete the specified BookPage
+        const deletedChapter = yield prisma.chapter.delete({
+            where: { id },
+        });
+        // Update the page numbers of subsequent pages
+        yield prisma.chapter.updateMany({
+            where: {
+                bookId,
+                chapterNo: { gt: chapterNo }, // Update only pages after the deleted one
+            },
+            data: {
+                chapterNo: { decrement: 1 }, // Decrement the page number by 1
+            },
+        });
+        return deletedChapter;
+    }));
 });
 exports.ChapterService = {
     getAllChapter,

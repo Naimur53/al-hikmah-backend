@@ -10,6 +10,7 @@ const bookPage_controller_1 = require("./bookPage.controller");
 const bookPage_validation_1 = require("./bookPage.validation");
 const router = express_1.default.Router();
 router.get('/', bookPage_controller_1.BookPageController.getAllBookPage);
+router.get('/get-single-book-by-name/:name', bookPage_controller_1.BookPageController.getSingleBookPageByName);
 router.get('/:id', bookPage_controller_1.BookPageController.getSingleBookPage);
 router.post('/', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.createValidation), bookPage_controller_1.BookPageController.createBookPage);
 router.post('/bulk', (0, validateRequest_1.default)(bookPage_validation_1.BookPageValidation.bulkCreateValidation), bookPage_controller_1.BookPageController.bulkCreateBookPage);

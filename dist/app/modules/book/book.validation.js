@@ -5,11 +5,15 @@ const zod_1 = require("zod");
 const createValidation = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string({ required_error: 'Name is required' }),
+        banglaName: zod_1.z.string({ required_error: 'banglaName is required' }),
         photo: zod_1.z.string({ required_error: 'Photo is required' }),
         description: zod_1.z.string({ required_error: 'Description is required' }),
         keywords: zod_1.z.string({ required_error: 'Keywords is required' }),
         docLink: zod_1.z.string({ required_error: 'DocLink is required' }).optional(),
         pdfLink: zod_1.z.string({ required_error: 'PdfLink is required' }).optional(),
+        pdfViewLink: zod_1.z
+            .string({ required_error: 'PdfViewLink is required' })
+            .optional(),
         categoryId: zod_1.z.string({ required_error: 'CategoryId is required' }),
         authorId: zod_1.z.string({ required_error: 'AuthorId is required' }),
         publisherId: zod_1.z.string({ required_error: 'PublisherId is required' }),
@@ -21,6 +25,12 @@ const createValidation = zod_1.z.object({
 const updateValidation = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string({ required_error: 'Name is required' }).optional(),
+        banglaName: zod_1.z
+            .string({ required_error: 'banglaName is required' })
+            .optional(),
+        pdfViewLink: zod_1.z
+            .string({ required_error: 'PdfViewLink is required' })
+            .optional(),
         photo: zod_1.z.string({ required_error: 'Photo is required' }).optional(),
         description: zod_1.z
             .string({ required_error: 'Description is required' })

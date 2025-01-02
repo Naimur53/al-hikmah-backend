@@ -32,6 +32,7 @@ model User {
   blogs           Blog[]
   VerificationOtp VerificationOtp[]
   wishlist        Wishlist[]
+  bookMarks       BookMark[]
 }
 
 model Blog {
@@ -81,11 +82,20 @@ model Publisher {
   updatedAt DateTime @updatedAt
   books     Book[]
 }
+model BookMark {
+  id        String   @id @unique @default(uuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  bookId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+}
 
 model Book {
   id          String       @id @unique @default(uuid())
   name        String       @unique
-  banglaName  String
+  banglaName  String       @default("")
   photo       String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -97,12 +107,16 @@ model Book {
   totalRead   Int          @default(0)
   keywords    String
   pdfLink     String?
+  pdfViewLink String?
   isActive    Boolean      @default(true)
+  isFeatured  Boolean      @default(false)
+
   author      Author       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category    BookCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   publisher   Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   bookPages   BookPage[]
   chapters    Chapter[]
+  bookmarks   BookMark[]
 }
 
 model Chapter {
@@ -142,6 +156,13 @@ model BookPage {
   book         Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
   chapter      Chapter?    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   subChapter   SubChapter? @relation(fields: [subChapterId], references: [id], onDelete: Cascade)
+}
+
+model NewsLetter {
+  id        String   @id @unique @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum EUserRole {

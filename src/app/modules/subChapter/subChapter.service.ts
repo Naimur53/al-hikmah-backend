@@ -97,6 +97,19 @@ const createSubChapter = async (
       'BookPage already exists on chapter remove them first to create subchapter!',
     );
   }
+  // check if the subchapter already exists with number
+  const isExist = await prisma.subChapter.findFirst({
+    where: {
+      subChapterNo: payload.subChapterNo,
+      chapterId: payload.chapterId,
+    },
+  });
+  if (isExist) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'SubChapter already exists! with this number :' + payload.subChapterNo,
+    );
+  }
   const newSubChapter = await prisma.subChapter.create({
     data: payload,
   });
@@ -116,6 +129,31 @@ const updateSubChapter = async (
   id: string,
   payload: Partial<SubChapter>,
 ): Promise<SubChapter | null> => {
+  const isExist = await prisma.subChapter.findUnique({ where: { id } });
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'SubChapter not found!');
+  }
+  if (payload.subChapterNo && isExist.subChapterNo !== payload.subChapterNo) {
+    return await prisma.$transaction(async prisma => {
+      await prisma.subChapter.updateMany({
+        where: {
+          chapterId: isExist.chapterId,
+          subChapterNo: {
+            gte: payload.subChapterNo,
+          },
+        },
+        data: {
+          subChapterNo: {
+            increment: 1,
+          },
+        },
+      });
+      return await prisma.subChapter.update({
+        where: { id },
+        data: payload,
+      });
+    });
+  }
   const result = await prisma.subChapter.update({
     where: {
       id,
@@ -126,13 +164,35 @@ const updateSubChapter = async (
 };
 
 const deleteSubChapter = async (id: string): Promise<SubChapter | null> => {
-  const result = await prisma.subChapter.delete({
-    where: { id },
+  return await prisma.$transaction(async prisma => {
+    // Find the page to delete
+    const subChapterToDelete = await prisma.subChapter.findUnique({
+      where: { id },
+    });
+
+    if (!subChapterToDelete) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+    }
+
+    const { chapterId, subChapterNo } = subChapterToDelete;
+
+    // Delete the specified BookPage
+    const deletedPage = await prisma.subChapter.delete({
+      where: { id },
+    });
+
+    // Update the page numbers of subsequent pages
+    await prisma.subChapter.updateMany({
+      where: {
+        chapterId,
+        subChapterNo: { gt: subChapterNo }, // Update only pages after the deleted one
+      },
+      data: {
+        subChapterNo: { decrement: 1 }, // Decrement the page number by 1
+      },
+    });
+    return deletedPage;
   });
-  if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'SubChapter not found!');
-  }
-  return result;
 };
 
 export const SubChapterService = {

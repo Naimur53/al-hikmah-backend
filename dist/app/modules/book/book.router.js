@@ -12,6 +12,7 @@ const book_controller_1 = require("./book.controller");
 const book_validation_1 = require("./book.validation");
 const router = express_1.default.Router();
 router.get('/', book_controller_1.BookController.getAllBook);
+router.get('/get-single-book-by-name/:name', book_controller_1.BookController.getSingleBookByName);
 router.get('/:id', book_controller_1.BookController.getSingleBook);
 router.post('/', (0, auth_1.default)(client_1.EUserRole.SUPER_ADMIN, client_1.EUserRole.ADMIN), (0, validateRequest_1.default)(book_validation_1.BookValidation.createValidation), book_controller_1.BookController.createBook);
 router.patch('/:id', (0, auth_1.default)(client_1.EUserRole.SUPER_ADMIN, client_1.EUserRole.ADMIN), (0, validateRequest_1.default)(book_validation_1.BookValidation.updateValidation), book_controller_1.BookController.updateBook);

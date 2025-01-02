@@ -83,7 +83,7 @@ const getAllBook = async (
         return {
           [key]: {
             equals:
-              key === 'isActive'
+              key === 'isActive' || key === 'isFeatured'
                 ? JSON.parse((filterData as any)[key])
                 : (filterData as any)[key],
           },
@@ -110,7 +110,7 @@ const getAllBook = async (
     // include: { author: true, publisher: true, category: true },
   });
 
-  const total = await prisma.book.count();
+  const total = await prisma.book.count({ where: whereConditions });
   const output = {
     data: result,
     meta: { page, limit, total },
@@ -156,19 +156,11 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
     where: {
       id,
     },
-  });
-  return result;
-};
-const getSingleBookByName = async (name: string): Promise<Book | null> => {
-  console.log(name, name.split('-').join(' '));
-  const result = await prisma.book.findUnique({
-    where: {
-      name: name.includes('-') ? name.split('-').join(' ') : name,
-      isActive: true,
-    },
     select: {
       id: true,
       name: true,
+      banglaName: true,
+      isFeatured: true,
       description: true,
       keywords: true,
       photo: true,
@@ -182,6 +174,67 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
       category: true,
       authorId: true,
       publisherId: true,
+      totalRead: true,
+      pdfViewLink: true,
+      categoryId: true,
+      chapters: {
+        orderBy: {
+          chapterNo: 'asc',
+        },
+        select: {
+          id: true,
+          title: true,
+          bookId: true,
+          description: true,
+          createdAt: true,
+          chapterNo: true,
+          updatedAt: true,
+          subChapters: {
+            orderBy: {
+              subChapterNo: 'asc',
+            },
+            select: {
+              id: true,
+              description: true,
+              title: true,
+              chapterId: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  return result;
+};
+const getSingleBookByName = async (name: string): Promise<Book | null> => {
+  console.log(name, name.split('-').join(' '));
+  const result = await prisma.book.findUnique({
+    where: {
+      name: name.includes('-') ? name.split('-').join(' ') : name,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      banglaName: true,
+      isFeatured: true,
+      description: true,
+      keywords: true,
+      photo: true,
+      createdAt: true,
+      updatedAt: true,
+      docLink: true,
+      isActive: true,
+      pdfLink: true,
+      author: true,
+      publisher: true,
+      category: true,
+      authorId: true,
+      publisherId: true,
+      totalRead: true,
+      pdfViewLink: true,
       categoryId: true,
       chapters: {
         orderBy: {

@@ -6,7 +6,7 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import { userSearchableFields } from './user.constant';
-import { IUserFilters } from './user.interface';
+import { IAdminOverview, IUserFilters } from './user.interface';
 
 const getAllUser = async (
   filters: IUserFilters,
@@ -157,6 +157,35 @@ const deleteUser = async (id: string): Promise<User | null> => {
   }
   return result;
 };
+const getAdminOverview = async (): Promise<IAdminOverview | null> => {
+  const [
+    totalUser,
+    totalBook,
+    totalBlog,
+    totalNewsletter,
+    totalAuthor,
+    totalPublisher,
+    totalCategory,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.book.count(),
+    prisma.blog.count(),
+    prisma.newsLetter.count(),
+    prisma.author.count(),
+    prisma.publisher.count(),
+    prisma.bookCategory.count(),
+  ]);
+
+  return {
+    totalUser,
+    totalBook,
+    totalBlog,
+    totalNewsletter,
+    totalAuthor,
+    totalPublisher,
+    totalCategory,
+  };
+};
 
 export const UserService = {
   getAllUser,
@@ -164,4 +193,5 @@ export const UserService = {
   updateUser,
   getSingleUser,
   deleteUser,
+  getAdminOverview,
 };

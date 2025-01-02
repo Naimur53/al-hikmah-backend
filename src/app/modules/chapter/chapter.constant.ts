@@ -1,9 +1,2 @@
-
-        export const chapterSearchableFields = [ 
-          
-        ];
-        export const chapterFilterAbleFields = [
-            
-          ];
-          
-        
+export const chapterSearchableFields = [];
+export const chapterFilterAbleFields = ['bookId'];

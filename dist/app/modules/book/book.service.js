@@ -90,7 +90,7 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             AND: Object.keys(filterData).map(key => {
                 return {
                     [key]: {
-                        equals: key === 'isActive'
+                        equals: key === 'isActive' || key === 'isFeatured'
                             ? JSON.parse(filterData[key])
                             : filterData[key],
                     },
@@ -112,8 +112,7 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             },
         // include: { author: true, publisher: true, category: true },
     });
-    console.log(result);
-    const total = yield prisma_1.default.book.count();
+    const total = yield prisma_1.default.book.count({ where: whereConditions });
     const output = {
         data: result,
         meta: { page, limit, total },
@@ -154,7 +153,116 @@ const getSingleBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
         where: {
             id,
         },
+        select: {
+            id: true,
+            name: true,
+            banglaName: true,
+            isFeatured: true,
+            description: true,
+            keywords: true,
+            photo: true,
+            createdAt: true,
+            updatedAt: true,
+            docLink: true,
+            isActive: true,
+            pdfLink: true,
+            author: true,
+            publisher: true,
+            category: true,
+            authorId: true,
+            publisherId: true,
+            totalRead: true,
+            pdfViewLink: true,
+            categoryId: true,
+            chapters: {
+                orderBy: {
+                    chapterNo: 'asc',
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    bookId: true,
+                    description: true,
+                    createdAt: true,
+                    chapterNo: true,
+                    updatedAt: true,
+                    subChapters: {
+                        orderBy: {
+                            subChapterNo: 'asc',
+                        },
+                        select: {
+                            id: true,
+                            description: true,
+                            title: true,
+                            chapterId: true,
+                            createdAt: true,
+                            updatedAt: true,
+                        },
+                    },
+                },
+            },
+        },
     });
+    return result;
+});
+const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(name, name.split('-').join(' '));
+    const result = yield prisma_1.default.book.findUnique({
+        where: {
+            name: name.includes('-') ? name.split('-').join(' ') : name,
+            isActive: true,
+        },
+        select: {
+            id: true,
+            name: true,
+            banglaName: true,
+            isFeatured: true,
+            description: true,
+            keywords: true,
+            photo: true,
+            createdAt: true,
+            updatedAt: true,
+            docLink: true,
+            isActive: true,
+            pdfLink: true,
+            author: true,
+            publisher: true,
+            category: true,
+            authorId: true,
+            publisherId: true,
+            totalRead: true,
+            pdfViewLink: true,
+            categoryId: true,
+            chapters: {
+                orderBy: {
+                    chapterNo: 'asc',
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    bookId: true,
+                    description: true,
+                    createdAt: true,
+                    chapterNo: true,
+                    updatedAt: true,
+                    subChapters: {
+                        orderBy: {
+                            subChapterNo: 'asc',
+                        },
+                        select: {
+                            id: true,
+                            description: true,
+                            title: true,
+                            chapterId: true,
+                            createdAt: true,
+                            updatedAt: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    console.log(result);
     return result;
 });
 const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -181,4 +289,5 @@ exports.BookService = {
     updateBook,
     getSingleBook,
     deleteBook,
+    getSingleBookByName,
 };

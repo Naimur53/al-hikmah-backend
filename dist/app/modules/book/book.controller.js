@@ -18,8 +18,8 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const book_service_1 = require("./book.service");
 const book_constant_1 = require("./book.constant");
+const book_service_1 = require("./book.service");
 const createBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const BookData = req.body;
     const result = yield book_service_1.BookService.createBook(BookData);
@@ -31,10 +31,7 @@ const createBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const getAllBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.default)(req.query, [
-        'searchTerm',
-        ...book_constant_1.bookFilterAbleFields,
-    ]);
+    const filters = (0, pick_1.default)(req.query, ['searchTerm', ...book_constant_1.bookFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const result = yield book_service_1.BookService.getAllBook(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {
@@ -48,6 +45,16 @@ const getAllBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 const getSingleBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield book_service_1.BookService.getSingleBook(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Book retrieved  successfully!',
+        data: result,
+    });
+}));
+const getSingleBookByName = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = req.params.name;
+    const result = yield book_service_1.BookService.getSingleBookByName(name);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -82,4 +89,5 @@ exports.BookController = {
     updateBook,
     getSingleBook,
     deleteBook,
+    getSingleBookByName,
 };

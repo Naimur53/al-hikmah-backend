@@ -50,11 +50,16 @@ const getAllBookPage = (filters, paginationOptions) => __awaiter(void 0, void 0,
     if (Object.keys(filters).length) {
         andCondition.push({
             AND: Object.entries(filterData).map(([field, value]) => {
-                return { [field]: value };
+                return {
+                    [field]: value === null || value === 'undefined' || value === 'null'
+                        ? null
+                        : { equals: value },
+                };
             }),
         });
     }
     const whereConditions = andCondition.length > 0 ? { AND: andCondition } : {};
+    console.log(andCondition[0]);
     const result = yield prisma_1.default.bookPage.findMany({
         where: whereConditions,
         skip,
@@ -66,8 +71,40 @@ const getAllBookPage = (filters, paginationOptions) => __awaiter(void 0, void 0,
             : {
                 page: 'asc',
             },
+        select: {
+            id: true,
+            bookId: true,
+            page: true,
+            chapterId: true,
+            subChapterId: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            book: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+            chapter: {
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    chapterNo: true,
+                },
+            },
+            subChapter: {
+                select: {
+                    id: true,
+                    title: true,
+                    subChapterNo: true,
+                    description: true,
+                },
+            },
+        },
     });
-    const total = yield prisma_1.default.bookPage.count();
+    const total = yield prisma_1.default.bookPage.count({ where: whereConditions });
     const output = {
         data: result,
         meta: { page, limit, total },
@@ -75,6 +112,7 @@ const getAllBookPage = (filters, paginationOptions) => __awaiter(void 0, void 0,
     return output;
 });
 const createBookPage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     // check if book page exist with value
     const isExits = yield prisma_1.default.bookPage.findFirst({
         where: {
@@ -86,6 +124,32 @@ const createBookPage = (payload) => __awaiter(void 0, void 0, void 0, function* 
     });
     if (isExits) {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Book Page already exist with this value!' + 'page no:' + payload.page);
+    }
+    const isAnyExits = yield prisma_1.default.book.findFirst({
+        where: {
+            id: payload.bookId,
+        },
+        select: {
+            chapters: {
+                select: {
+                    id: true,
+                    subChapters: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+                take: 1,
+            },
+        },
+    });
+    if ((isAnyExits === null || isAnyExits === void 0 ? void 0 : isAnyExits.chapters.length) &&
+        ((_a = isAnyExits.chapters[0].subChapters) === null || _a === void 0 ? void 0 : _a.length) &&
+        !payload.subChapterId) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'SubChapterId is required!');
+    }
+    if ((isAnyExits === null || isAnyExits === void 0 ? void 0 : isAnyExits.chapters.length) && !payload.chapterId) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'ChapterId is required!');
     }
     const newBookPage = yield prisma_1.default.bookPage.create({
         data: payload,
@@ -136,7 +200,37 @@ const getSingleBookPage = (id) => __awaiter(void 0, void 0, void 0, function* ()
     });
     return result;
 });
+const getSingleBookPageByName = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(id);
+    const result = yield prisma_1.default.bookPage.findUnique({
+        where: {
+            id,
+        },
+    });
+    return result;
+});
 const updateBookPage = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExists = yield prisma_1.default.bookPage.findUnique({ where: { id } });
+    if (!isExists) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'BookPage not found!');
+    }
+    if (payload.page && payload.page !== isExists.page) {
+        return yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield tx.bookPage.updateMany({
+                where: {
+                    bookId: isExists.bookId,
+                    chapterId: isExists.chapterId,
+                    subChapterId: isExists.subChapterId,
+                    page: { gte: payload.page },
+                },
+                data: { page: { increment: 1 } },
+            });
+            return yield tx.bookPage.update({
+                where: { id },
+                data: { page: payload.page },
+            });
+        }));
+    }
     const result = yield prisma_1.default.bookPage.update({
         where: {
             id,
@@ -223,4 +317,5 @@ exports.BookPageService = {
     deleteBookPage,
     bulkCreateBookPage,
     bulkDeleteBookPage,
+    getSingleBookPageByName,
 };
