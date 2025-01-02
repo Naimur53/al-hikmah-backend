@@ -129,6 +129,13 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             publisherId: true,
             totalRead: true,
             categoryId: true,
+            bookPages: {
+                take: 1,
+                where: {
+                    chapterId: null,
+                    subChapterId: null,
+                },
+            },
             chapters: {
                 take: 1,
                 orderBy: {
