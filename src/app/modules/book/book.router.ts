@@ -21,6 +21,11 @@ router.post(
 );
 
 router.patch(
+  '/increase-share-count/:id',
+  validateRequest(BookValidation.updateValidation),
+  BookController.updateBookShareCount,
+);
+router.patch(
   '/:id',
   auth(EUserRole.SUPER_ADMIN, EUserRole.ADMIN),
   validateRequest(BookValidation.updateValidation),

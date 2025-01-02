@@ -159,6 +159,7 @@ const getSingleBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
             banglaName: true,
             isFeatured: true,
             description: true,
+            totalShare: true,
             keywords: true,
             photo: true,
             createdAt: true,
@@ -232,6 +233,7 @@ const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function
             publisherId: true,
             totalRead: true,
             pdfViewLink: true,
+            totalShare: true,
             categoryId: true,
             chapters: {
                 orderBy: {
@@ -274,6 +276,19 @@ const updateBook = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     });
     return result;
 });
+const updateBookShareCount = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.book.update({
+        where: {
+            id,
+        },
+        data: {
+            totalShare: {
+                increment: 1,
+            },
+        },
+    });
+    return result;
+});
 const deleteBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.book.delete({
         where: { id },
@@ -289,5 +304,6 @@ exports.BookService = {
     updateBook,
     getSingleBook,
     deleteBook,
+    updateBookShareCount,
     getSingleBookByName,
 };

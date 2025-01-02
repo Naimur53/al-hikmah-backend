@@ -14,7 +14,7 @@ router.get(
 );
 router.get(
   '/admin/overview',
-  // auth(EUserRole.ADMIN, EUserRole.SUPER_ADMIN),
+  auth(EUserRole.ADMIN, EUserRole.SUPER_ADMIN),
   UserController.getAdminOverview,
 );
 router.get(

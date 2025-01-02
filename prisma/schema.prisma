@@ -105,6 +105,7 @@ model Book {
   description String
   docLink     String?
   totalRead   Int          @default(0)
+  totalShare  Int          @default(0) 
   keywords    String
   pdfLink     String?
   pdfViewLink String?

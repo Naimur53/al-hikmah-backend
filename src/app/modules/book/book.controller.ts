@@ -82,6 +82,23 @@ const updateBook: RequestHandler = catchAsync(
     });
   },
 );
+const updateBookShareCount: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const updateAbleData = req.body;
+
+    const result = await BookService.updateBookShareCount(id);
+
+    sendResponse<{ count: number }>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Book share count Updated successfully!',
+      data: {
+        count: result?.totalShare || 0,
+      },
+    });
+  },
+);
 const deleteBook: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -104,4 +121,5 @@ export const BookController = {
   getSingleBook,
   deleteBook,
   getSingleBookByName,
+  updateBookShareCount,
 };

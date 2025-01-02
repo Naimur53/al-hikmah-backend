@@ -162,6 +162,7 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
       banglaName: true,
       isFeatured: true,
       description: true,
+      totalShare: true,
       keywords: true,
       photo: true,
       createdAt: true,
@@ -235,6 +236,7 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
       publisherId: true,
       totalRead: true,
       pdfViewLink: true,
+      totalShare: true,
       categoryId: true,
       chapters: {
         orderBy: {
@@ -281,6 +283,19 @@ const updateBook = async (
   });
   return result;
 };
+const updateBookShareCount = async (id: string): Promise<Book | null> => {
+  const result = await prisma.book.update({
+    where: {
+      id,
+    },
+    data: {
+      totalShare: {
+        increment: 1,
+      },
+    },
+  });
+  return result;
+};
 
 const deleteBook = async (id: string): Promise<Book | null> => {
   const result = await prisma.book.delete({
@@ -298,5 +313,6 @@ export const BookService = {
   updateBook,
   getSingleBook,
   deleteBook,
+  updateBookShareCount,
   getSingleBookByName,
 };

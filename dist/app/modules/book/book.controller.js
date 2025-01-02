@@ -73,6 +73,19 @@ const updateBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const updateBookShareCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const updateAbleData = req.body;
+    const result = yield book_service_1.BookService.updateBookShareCount(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Book share count Updated successfully!',
+        data: {
+            count: (result === null || result === void 0 ? void 0 : result.totalShare) || 0,
+        },
+    });
+}));
 const deleteBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield book_service_1.BookService.deleteBook(id);
@@ -90,4 +103,5 @@ exports.BookController = {
     getSingleBook,
     deleteBook,
     getSingleBookByName,
+    updateBookShareCount,
 };
