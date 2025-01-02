@@ -110,6 +110,36 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             : {
                 createdAt: 'desc',
             },
+        select: {
+            id: true,
+            name: true,
+            banglaName: true,
+            isFeatured: true,
+            description: true,
+            totalShare: true,
+            keywords: true,
+            photo: true,
+            createdAt: true,
+            updatedAt: true,
+            isActive: true,
+            author: true,
+            publisher: true,
+            category: true,
+            authorId: true,
+            publisherId: true,
+            totalRead: true,
+            categoryId: true,
+            chapters: {
+                take: 1,
+                orderBy: {
+                    chapterNo: 'asc',
+                },
+                select: {
+                    id: true,
+                    title: true,
+                },
+            },
+        },
         // include: { author: true, publisher: true, category: true },
     });
     const total = yield prisma_1.default.book.count({ where: whereConditions });

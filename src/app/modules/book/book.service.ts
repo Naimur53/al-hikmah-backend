@@ -11,7 +11,7 @@ import { IBookFilters } from './book.interface';
 const getAllBook = async (
   filters: IBookFilters,
   paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<Book[]>> => {
+): Promise<IGenericResponse<Partial<Book>[]>> => {
   const { page, limit, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -107,6 +107,36 @@ const getAllBook = async (
         : {
             createdAt: 'desc',
           },
+    select: {
+      id: true,
+      name: true,
+      banglaName: true,
+      isFeatured: true,
+      description: true,
+      totalShare: true,
+      keywords: true,
+      photo: true,
+      createdAt: true,
+      updatedAt: true,
+      isActive: true,
+      author: true,
+      publisher: true,
+      category: true,
+      authorId: true,
+      publisherId: true,
+      totalRead: true,
+      categoryId: true,
+      chapters: {
+        take: 1,
+        orderBy: {
+          chapterNo: 'asc',
+        },
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
     // include: { author: true, publisher: true, category: true },
   });
 

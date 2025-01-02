@@ -18,8 +18,8 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const chapter_service_1 = require("./chapter.service");
 const chapter_constant_1 = require("./chapter.constant");
+const chapter_service_1 = require("./chapter.service");
 const createChapter = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ChapterData = req.body;
     const result = yield chapter_service_1.ChapterService.createChapter(ChapterData);
@@ -31,10 +31,7 @@ const createChapter = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 const getAllChapter = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.default)(req.query, [
-        'searchTerm',
-        ...chapter_constant_1.chapterFilterAbleFields,
-    ]);
+    const filters = (0, pick_1.default)(req.query, ['searchTerm', ...chapter_constant_1.chapterFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const result = yield chapter_service_1.ChapterService.getAllChapter(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {

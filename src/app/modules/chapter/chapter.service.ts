@@ -11,7 +11,7 @@ import { IChapterFilters } from './chapter.interface';
 const getAllChapter = async (
   filters: IChapterFilters,
   paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<Chapter[]>> => {
+): Promise<IGenericResponse<Partial<Chapter>[]>> => {
   const { page, limit, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -58,6 +58,20 @@ const getAllChapter = async (
         : {
             chapterNo: 'asc',
           },
+    select: {
+      id: true,
+      chapterNo: true,
+      title: true,
+      description: true,
+      subChapters: {
+        take: 1,
+        select: {
+          id: true,
+          title: true,
+          subChapterNo: true,
+        },
+      },
+    },
   });
   const total = await prisma.chapter.count({ where: whereConditions });
   const output = {
