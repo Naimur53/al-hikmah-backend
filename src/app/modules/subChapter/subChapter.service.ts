@@ -58,6 +58,22 @@ const getAllSubChapter = async (
         : {
             subChapterNo: 'asc',
           },
+    select: {
+      bookPages: {
+        take: 1,
+        select: {
+          id: true,
+          page: true,
+        },
+      },
+      id: true,
+      subChapterNo: true,
+      chapterId: true,
+      createdAt: true,
+      updatedAt: true,
+      title: true,
+      description: true,
+    },
   });
   const total = await prisma.subChapter.count();
   const output = {

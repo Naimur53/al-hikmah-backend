@@ -63,6 +63,19 @@ const getAllChapter = async (
       chapterNo: true,
       title: true,
       description: true,
+      bookPages: {
+        take: 1,
+        select: {
+          id: true,
+          page: true,
+        },
+      },
+      book: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       subChapters: {
         take: 1,
         select: {

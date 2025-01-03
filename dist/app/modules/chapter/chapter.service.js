@@ -73,6 +73,19 @@ const getAllChapter = (filters, paginationOptions) => __awaiter(void 0, void 0, 
             chapterNo: true,
             title: true,
             description: true,
+            bookPages: {
+                take: 1,
+                select: {
+                    id: true,
+                    page: true,
+                },
+            },
+            book: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
             subChapters: {
                 take: 1,
                 select: {

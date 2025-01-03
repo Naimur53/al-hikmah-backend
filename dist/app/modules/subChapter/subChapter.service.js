@@ -68,6 +68,22 @@ const getAllSubChapter = (filters, paginationOptions) => __awaiter(void 0, void 
             : {
                 subChapterNo: 'asc',
             },
+        select: {
+            bookPages: {
+                take: 1,
+                select: {
+                    id: true,
+                    page: true,
+                },
+            },
+            id: true,
+            subChapterNo: true,
+            chapterId: true,
+            createdAt: true,
+            updatedAt: true,
+            title: true,
+            description: true,
+        },
     });
     const total = yield prisma_1.default.subChapter.count();
     const output = {
