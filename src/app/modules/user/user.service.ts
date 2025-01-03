@@ -139,6 +139,12 @@ const updateUser = async (
       'You are not allowed to update password',
     );
   }
+  if (payload.email || payload.gId) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You are not allowed to update email and unique field',
+    );
+  }
   const result = await prisma.user.update({
     where: {
       id,

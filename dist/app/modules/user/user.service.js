@@ -124,6 +124,9 @@ const updateUser = (id, payload, requestedUserId) => __awaiter(void 0, void 0, v
     if (payload.password) {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'You are not allowed to update password');
     }
+    if (payload.email || payload.gId) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'You are not allowed to update email and unique field');
+    }
     const result = yield prisma_1.default.user.update({
         where: {
             id,

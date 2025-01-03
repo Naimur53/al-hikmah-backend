@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../config"));
 const createBycryptPassword = (password) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('password', password);
     const bcryptPass = yield bcrypt_1.default.hash(password, Number(config_1.default.bycrypt_salt_rounds));
     return bcryptPass;
 });

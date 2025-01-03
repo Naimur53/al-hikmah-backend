@@ -166,6 +166,7 @@ const googleLoginUser = async (
     user = newUser;
   } else {
     const generateBycryptGid = await createBycryptPassword(gId);
+    console.log({ generateBycryptGid, gId });
     // check user was login with normalEmail
     if (!isUserExist.gId) {
       // linking
@@ -175,9 +176,7 @@ const googleLoginUser = async (
       });
       user = updateUserGId;
     } else {
-      // check is user was login with google
-      console.log('generateBycryptGid !== isUserExist.gId');
-      if (generateBycryptGid !== isUserExist.gId) {
+      if (!(await bcryptjs.compare(gId, isUserExist.gId))) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'User Gid does not match!');
       }
       user = isUserExist;
