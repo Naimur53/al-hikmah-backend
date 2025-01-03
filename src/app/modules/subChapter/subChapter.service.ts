@@ -182,12 +182,13 @@ const updateSubChapter = async (
 const deleteSubChapter = async (id: string): Promise<SubChapter | null> => {
   return await prisma.$transaction(async prisma => {
     // Find the page to delete
+
     const subChapterToDelete = await prisma.subChapter.findUnique({
       where: { id },
     });
 
     if (!subChapterToDelete) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'BookPage not found!');
+      throw new ApiError(httpStatus.NOT_FOUND, 'sub chapter not found!');
     }
 
     const { chapterId, subChapterNo } = subChapterToDelete;
