@@ -1,9 +1,2 @@
-
-        export const subChapterSearchableFields = [ 
-          
-        ];
-        export const subChapterFilterAbleFields = [
-            
-          ];
-          
-        
+export const subChapterSearchableFields = [];
+export const subChapterFilterAbleFields = ['chapterId'];
