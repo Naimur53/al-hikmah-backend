@@ -247,7 +247,6 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
   return result;
 };
 const getSingleBookByName = async (name: string): Promise<Book | null> => {
-  console.log(name, name.split('-').join(' '));
   const result = await prisma.book.findUnique({
     where: {
       name: name.includes('-') ? name.split('-').join(' ') : name,
@@ -308,6 +307,85 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
   return result;
 };
 
+const getContentStructure = async ({
+  name,
+  id,
+  isActive,
+}: {
+  name?: string;
+  id?: string;
+  isActive?: string;
+}): Promise<Book | null> => {
+  let query: any = {};
+  if (name) {
+    query.name = name.includes('-') ? name.split('-').join(' ') : name;
+  }
+  if (id) {
+    query.id = id;
+  }
+  if (isActive === 'false' || isActive === 'true') {
+    query.isActive = isActive === 'true' ? true : false;
+  }
+  if (Object.keys(query).length === 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid query params');
+  }
+
+  const result = await prisma.book.findUnique({
+    where: query,
+    select: {
+      id: true,
+      name: true,
+      banglaName: true,
+      isFeatured: true,
+      description: true,
+      keywords: true,
+      photo: true,
+      createdAt: true,
+      updatedAt: true,
+      docLink: true,
+      isActive: true,
+      pdfLink: true,
+      author: true,
+      publisher: true,
+      category: true,
+      authorId: true,
+      publisherId: true,
+      totalRead: true,
+      pdfViewLink: true,
+      totalShare: true,
+      categoryId: true,
+      chapters: {
+        orderBy: {
+          chapterNo: 'asc',
+        },
+        select: {
+          id: true,
+          title: true,
+          bookId: true,
+          description: true,
+          createdAt: true,
+          chapterNo: true,
+          updatedAt: true,
+          subChapters: {
+            orderBy: {
+              subChapterNo: 'asc',
+            },
+            select: {
+              id: true,
+              description: true,
+              title: true,
+              chapterId: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  console.log(result);
+  return result;
+};
 const updateBook = async (
   id: string,
   payload: Partial<Book>,
@@ -352,4 +430,5 @@ export const BookService = {
   deleteBook,
   updateBookShareCount,
   getSingleBookByName,
+  getContentStructure,
 };

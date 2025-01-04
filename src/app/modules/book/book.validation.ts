@@ -2,7 +2,12 @@ import { z } from 'zod';
 
 const createValidation = z.object({
   body: z.object({
-    name: z.string({ required_error: 'Name is required' }),
+    // name can not include "-"
+    name: z
+      .string({ required_error: 'Name is required' })
+      .refine(val => !val.includes('-'), {
+        message: 'Name cannot contain a hyphen (-)',
+      }),
     banglaName: z.string({ required_error: 'banglaName is required' }),
     photo: z.string({ required_error: 'Photo is required' }),
     description: z.string({ required_error: 'Description is required' }),
@@ -22,7 +27,11 @@ const createValidation = z.object({
 });
 const updateValidation = z.object({
   body: z.object({
-    name: z.string({ required_error: 'Name is required' }).optional(),
+    name: z
+      .string({ required_error: 'Name is required' })
+      .refine(val => !val.includes('-'), {
+        message: 'Name cannot contain a hyphen (-)',
+      }),
     banglaName: z
       .string({ required_error: 'banglaName is required' })
       .optional(),
