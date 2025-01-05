@@ -138,16 +138,35 @@ const createBookPage = async (payload: BookPage): Promise<BookPage | null> => {
       },
     },
   });
-  if (
-    isAnyExits?.chapters.length &&
-    isAnyExits.chapters[0].subChapters?.length &&
-    !payload.subChapterId
-  ) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'SubChapterId is required!');
-  }
+
+  // if (
+  //   isAnyExits?.chapters.length &&
+  //   isAnyExits.chapters[0].subChapters?.length &&
+  //   !payload.subChapterId
+  // ) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'SubChapterId is required!');
+  // }
+
   if (isAnyExits?.chapters.length && !payload.chapterId) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'ChapterId is required!');
   }
+
+  if (payload.chapterId && payload.subChapterId) {
+    const isAnyPageExitsUnderTheChapter = await prisma.bookPage.findFirst({
+      where: {
+        bookId: payload.bookId,
+        chapterId: payload.chapterId,
+        subChapterId: null,
+      },
+    });
+    if (isAnyPageExitsUnderTheChapter) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'You can not add page on sub that already have page on chapter ',
+      );
+    }
+  }
+
   const newBookPage = await prisma.bookPage.create({
     data: payload,
   });

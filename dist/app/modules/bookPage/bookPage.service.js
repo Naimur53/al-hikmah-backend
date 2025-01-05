@@ -112,7 +112,6 @@ const getAllBookPage = (filters, paginationOptions) => __awaiter(void 0, void 0,
     return output;
 });
 const createBookPage = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     // check if book page exist with value
     const isExits = yield prisma_1.default.bookPage.findFirst({
         where: {
@@ -143,13 +142,27 @@ const createBookPage = (payload) => __awaiter(void 0, void 0, void 0, function* 
             },
         },
     });
-    if ((isAnyExits === null || isAnyExits === void 0 ? void 0 : isAnyExits.chapters.length) &&
-        ((_a = isAnyExits.chapters[0].subChapters) === null || _a === void 0 ? void 0 : _a.length) &&
-        !payload.subChapterId) {
-        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'SubChapterId is required!');
-    }
+    // if (
+    //   isAnyExits?.chapters.length &&
+    //   isAnyExits.chapters[0].subChapters?.length &&
+    //   !payload.subChapterId
+    // ) {
+    //   throw new ApiError(httpStatus.BAD_REQUEST, 'SubChapterId is required!');
+    // }
     if ((isAnyExits === null || isAnyExits === void 0 ? void 0 : isAnyExits.chapters.length) && !payload.chapterId) {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'ChapterId is required!');
+    }
+    if (payload.chapterId && payload.subChapterId) {
+        const isAnyPageExitsUnderTheChapter = yield prisma_1.default.bookPage.findFirst({
+            where: {
+                bookId: payload.bookId,
+                chapterId: payload.chapterId,
+                subChapterId: null,
+            },
+        });
+        if (isAnyPageExitsUnderTheChapter) {
+            throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'You can not add page on sub that already have page on chapter ');
+        }
     }
     const newBookPage = yield prisma_1.default.bookPage.create({
         data: payload,
