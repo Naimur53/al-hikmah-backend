@@ -1,7 +1,6 @@
 import { EUserRole } from '@prisma/client';
 import express from 'express';
 import auth from '../../middlewares/auth';
-import uploadImage, { uploadMulter } from '../../middlewares/uploadImage';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserController } from './user.controller';
 import { UserValidation } from './user.validation';
@@ -28,12 +27,12 @@ router.get(
 //   validateRequest(UserValidation.createValidation),
 //   UserController.createUser,
 // );
-router.post(
-  '/image-upload',
-  uploadMulter.single('image'),
-  uploadImage,
-  UserController.uploadSingleFile,
-);
+// router.post(
+//   '/image-upload',
+//   uploadMulter.single('image'),
+//   uploadImage,
+//   UserController.uploadSingleFile,
+// );
 router.patch(
   '/:id',
   auth(EUserRole.ADMIN, EUserRole.SUPER_ADMIN, EUserRole.USER),

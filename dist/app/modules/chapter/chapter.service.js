@@ -74,6 +74,9 @@ const getAllChapter = (filters, paginationOptions) => __awaiter(void 0, void 0, 
             title: true,
             description: true,
             bookPages: {
+                where: {
+                    subChapterId: null,
+                },
                 take: 1,
                 select: {
                     id: true,

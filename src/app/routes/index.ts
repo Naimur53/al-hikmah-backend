@@ -11,6 +11,7 @@ import { WishlistRoutes } from '../modules/wishlist/wishlist.router';
 import express from 'express';
 import { AuthRoutes } from '../modules/auth/auth.route';
 import { BookPageRoutes } from '../modules/bookPage/bookPage.router';
+import { fileUploadRoutes } from '../modules/fileUpload/fileUpload.route';
 import { NewsLetterRoutes } from '../modules/newsLetter/newsLetter.router';
 const router = express.Router();
 
@@ -72,6 +73,10 @@ const moduleRoutes = [
   {
     path: '/bookPage',
     route: BookPageRoutes,
+  },
+  {
+    path: '/file-upload',
+    route: fileUploadRoutes,
   },
 ];
 

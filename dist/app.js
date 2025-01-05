@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const http_status_1 = __importDefault(require("http-status"));
+const path_1 = __importDefault(require("path")); // Import path for resolving directories
 const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalErrorHandler"));
 const routes_1 = __importDefault(require("./app/routes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -16,6 +17,8 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/api/v1', routes_1.default);
+app.use('/uploadedFiles/image', express_1.default.static(path_1.default.join(__dirname, '../uploadedFiles/image')));
+app.use('/uploadedFiles/bookFile', express_1.default.static(path_1.default.join(__dirname, '../uploadedFiles/bookFile')));
 //global error handler
 app.use(globalErrorHandler_1.default);
 //handle not found

@@ -4,7 +4,12 @@ exports.BookValidation = void 0;
 const zod_1 = require("zod");
 const createValidation = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string({ required_error: 'Name is required' }),
+        // name can not include "-"
+        name: zod_1.z
+            .string({ required_error: 'Name is required' })
+            .refine(val => !val.includes('-'), {
+            message: 'Name cannot contain a hyphen (-)',
+        }),
         banglaName: zod_1.z.string({ required_error: 'banglaName is required' }),
         photo: zod_1.z.string({ required_error: 'Photo is required' }),
         description: zod_1.z.string({ required_error: 'Description is required' }),
@@ -24,7 +29,11 @@ const createValidation = zod_1.z.object({
 });
 const updateValidation = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string({ required_error: 'Name is required' }).optional(),
+        name: zod_1.z
+            .string({ required_error: 'Name is required' })
+            .refine(val => !val.includes('-'), {
+            message: 'Name cannot contain a hyphen (-)',
+        }),
         banglaName: zod_1.z
             .string({ required_error: 'banglaName is required' })
             .optional(),

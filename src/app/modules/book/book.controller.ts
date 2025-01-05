@@ -78,7 +78,7 @@ const getContentStructure: RequestHandler = catchAsync(
       isActive,
     });
 
-    sendResponse<Book>(res, {
+    sendResponse<Partial<Book>>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Book retrieved  successfully!',

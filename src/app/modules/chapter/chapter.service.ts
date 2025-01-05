@@ -64,6 +64,9 @@ const getAllChapter = async (
       title: true,
       description: true,
       bookPages: {
+        where: {
+          subChapterId: null,
+        },
         take: 1,
         select: {
           id: true,

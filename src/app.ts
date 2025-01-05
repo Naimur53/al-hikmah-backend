@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
+import path from 'path'; // Import path for resolving directories
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 
@@ -16,7 +17,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', routes);
-
+app.use(
+  '/uploadedFiles/image',
+  express.static(path.join(__dirname, '../uploadedFiles/image')),
+);
+app.use(
+  '/uploadedFiles/bookFile',
+  express.static(path.join(__dirname, '../uploadedFiles/bookFile')),
+);
 
 //global error handler
 app.use(globalErrorHandler);

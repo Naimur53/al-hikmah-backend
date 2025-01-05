@@ -244,7 +244,6 @@ const getSingleBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(name, name.split('-').join(' '));
     const result = yield prisma_1.default.book.findUnique({
         where: {
             name: name.includes('-') ? name.split('-').join(' ') : name,
@@ -272,6 +271,73 @@ const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function
             pdfViewLink: true,
             totalShare: true,
             categoryId: true,
+            chapters: {
+                orderBy: {
+                    chapterNo: 'asc',
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    bookId: true,
+                    description: true,
+                    createdAt: true,
+                    chapterNo: true,
+                    updatedAt: true,
+                    subChapters: {
+                        orderBy: {
+                            subChapterNo: 'asc',
+                        },
+                        select: {
+                            id: true,
+                            description: true,
+                            title: true,
+                            chapterId: true,
+                            createdAt: true,
+                            updatedAt: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    console.log(result);
+    return result;
+});
+const getContentStructure = (_a) => __awaiter(void 0, [_a], void 0, function* ({ name, id, isActive, }) {
+    let query = {};
+    if (name) {
+        query.name = name.includes('-') ? name.split('-').join(' ') : name;
+    }
+    if (id) {
+        query.id = id;
+    }
+    console.log(query);
+    if (isActive === 'false' || isActive === 'true') {
+        query.isActive = isActive === 'true' ? true : false;
+    }
+    if (Object.keys(query).length === 0) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid query params');
+    }
+    const result = yield prisma_1.default.book.findUnique({
+        where: query,
+        select: {
+            id: true,
+            name: true,
+            banglaName: true,
+            description: true,
+            photo: true,
+            createdAt: true,
+            updatedAt: true,
+            docLink: true,
+            pdfLink: true,
+            pdfViewLink: true,
+            bookPages: {
+                take: 10,
+                where: {
+                    chapterId: null,
+                    subChapterId: null,
+                },
+            },
             chapters: {
                 orderBy: {
                     chapterNo: 'asc',
@@ -343,4 +409,5 @@ exports.BookService = {
     deleteBook,
     updateBookShareCount,
     getSingleBookByName,
+    getContentStructure,
 };

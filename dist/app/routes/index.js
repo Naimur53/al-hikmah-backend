@@ -15,6 +15,7 @@ const wishlist_router_1 = require("../modules/wishlist/wishlist.router");
 const express_1 = __importDefault(require("express"));
 const auth_route_1 = require("../modules/auth/auth.route");
 const bookPage_router_1 = require("../modules/bookPage/bookPage.router");
+const fileUpload_route_1 = require("../modules/fileUpload/fileUpload.route");
 const newsLetter_router_1 = require("../modules/newsLetter/newsLetter.router");
 const router = express_1.default.Router();
 const moduleRoutes = [
@@ -66,6 +67,10 @@ const moduleRoutes = [
     {
         path: '/bookPage',
         route: bookPage_router_1.BookPageRoutes,
+    },
+    {
+        path: '/file-upload',
+        route: fileUpload_route_1.fileUploadRoutes,
     },
 ];
 moduleRoutes.forEach(route => router.use(route.path, route.route));

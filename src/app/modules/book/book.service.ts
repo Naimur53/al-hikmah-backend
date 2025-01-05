@@ -315,7 +315,7 @@ const getContentStructure = async ({
   name?: string;
   id?: string;
   isActive?: string;
-}): Promise<Book | null> => {
+}): Promise<Partial<Book> | null> => {
   let query: any = {};
   if (name) {
     query.name = name.includes('-') ? name.split('-').join(' ') : name;
@@ -323,6 +323,7 @@ const getContentStructure = async ({
   if (id) {
     query.id = id;
   }
+  console.log(query);
   if (isActive === 'false' || isActive === 'true') {
     query.isActive = isActive === 'true' ? true : false;
   }
@@ -336,24 +337,20 @@ const getContentStructure = async ({
       id: true,
       name: true,
       banglaName: true,
-      isFeatured: true,
       description: true,
-      keywords: true,
       photo: true,
       createdAt: true,
       updatedAt: true,
       docLink: true,
-      isActive: true,
       pdfLink: true,
-      author: true,
-      publisher: true,
-      category: true,
-      authorId: true,
-      publisherId: true,
-      totalRead: true,
       pdfViewLink: true,
-      totalShare: true,
-      categoryId: true,
+      bookPages: {
+        take: 10,
+        where: {
+          chapterId: null,
+          subChapterId: null,
+        },
+      },
       chapters: {
         orderBy: {
           chapterNo: 'asc',
