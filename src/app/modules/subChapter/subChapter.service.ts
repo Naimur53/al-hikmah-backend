@@ -78,6 +78,7 @@ const getAllSubChapter = async (
   const total = await prisma.subChapter.count();
   const output = {
     data: result,
+
     meta: { page, limit, total },
   };
   return output;
