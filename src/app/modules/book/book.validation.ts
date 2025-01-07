@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 const createValidation = z.object({
   body: z.object({
-    // name can not include "-"
+    // name can not include "-" and at the end no space
     name: z
       .string({ required_error: 'Name is required' })
-      .refine(val => !val.includes('-'), {
-        message: 'Name cannot contain a hyphen (-)',
+      .refine(val => !val.includes('-') && !val.endsWith(' '), {
+        message: 'Name cannot contain a hyphen (-) and cannot end with a space',
       }),
     banglaName: z.string({ required_error: 'banglaName is required' }),
     photo: z.string({ required_error: 'Photo is required' }),

@@ -92,6 +92,15 @@ const getAdminOverview = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const getAdminChartInfo = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.UserService.getAdminChartInfo();
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Admin chart info retrieved  successfully!',
+        data: result,
+    });
+}));
 exports.UserController = {
     getAllUser,
     createUser,
@@ -100,4 +109,5 @@ exports.UserController = {
     deleteUser,
     uploadSingleFile,
     getAdminOverview,
+    getAdminChartInfo,
 };

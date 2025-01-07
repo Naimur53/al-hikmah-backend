@@ -4,11 +4,11 @@ exports.BookValidation = void 0;
 const zod_1 = require("zod");
 const createValidation = zod_1.z.object({
     body: zod_1.z.object({
-        // name can not include "-"
+        // name can not include "-" and at the end no space
         name: zod_1.z
             .string({ required_error: 'Name is required' })
-            .refine(val => !val.includes('-'), {
-            message: 'Name cannot contain a hyphen (-)',
+            .refine(val => !val.includes('-') && !val.endsWith(' '), {
+            message: 'Name cannot contain a hyphen (-) and cannot end with a space',
         }),
         banglaName: zod_1.z.string({ required_error: 'banglaName is required' }),
         photo: zod_1.z.string({ required_error: 'Photo is required' }),

@@ -17,6 +17,11 @@ router.get(
   UserController.getAdminOverview,
 );
 router.get(
+  '/admin/chart-overview',
+  auth(EUserRole.ADMIN, EUserRole.SUPER_ADMIN),
+  UserController.getAdminChartInfo,
+);
+router.get(
   '/:id',
   auth(EUserRole.ADMIN, EUserRole.SUPER_ADMIN, EUserRole.USER),
   UserController.getSingleUser,

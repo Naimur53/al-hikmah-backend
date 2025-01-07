@@ -52,6 +52,56 @@ const getAllBookMark = async (
     where: whereConditions,
     skip,
     take: limit,
+    select: {
+      id: true,
+      userId: true,
+      bookId: true,
+      createdAt: true,
+      updatedAt: true,
+      book: {
+        select: {
+          id: true,
+          name: true,
+          banglaName: true,
+          isFeatured: true,
+          description: true,
+          totalShare: true,
+          keywords: true,
+          photo: true,
+          createdAt: true,
+          updatedAt: true,
+          isActive: true,
+          author: true,
+          publisher: true,
+          category: true,
+          authorId: true,
+          publisherId: true,
+          totalRead: true,
+          categoryId: true,
+          bookPages: {
+            take: 1,
+            select: {
+              id: true,
+              content: true,
+            },
+            where: {
+              chapterId: null,
+              subChapterId: null,
+            },
+          },
+          chapters: {
+            take: 1,
+            orderBy: {
+              chapterNo: 'asc',
+            },
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      },
+    },
     orderBy:
       paginationOptions.sortBy && paginationOptions.sortOrder
         ? {
@@ -70,6 +120,16 @@ const getAllBookMark = async (
 };
 
 const createBookMark = async (payload: BookMark): Promise<BookMark | null> => {
+  // check is exits
+  const isExist = await prisma.bookMark.findFirst({
+    where: {
+      userId: payload.userId,
+      bookId: payload.bookId,
+    },
+  });
+  if (isExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already Book Marked ');
+  }
   const newBookMark = await prisma.bookMark.create({
     data: payload,
   });
@@ -80,6 +140,16 @@ const getSingleBookMark = async (id: string): Promise<BookMark | null> => {
   const result = await prisma.bookMark.findUnique({
     where: {
       id,
+    },
+  });
+  return result;
+};
+const getSingleUserBookMark = async (
+  id: string,
+): Promise<BookMark[] | null> => {
+  const result = await prisma.bookMark.findMany({
+    where: {
+      userId: id,
     },
   });
   return result;
@@ -114,4 +184,5 @@ export const BookMarkService = {
   updateBookMark,
   getSingleBookMark,
   deleteBookMark,
+  getSingleUserBookMark,
 };

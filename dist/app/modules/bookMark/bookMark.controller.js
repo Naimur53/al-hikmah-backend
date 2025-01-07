@@ -18,11 +18,12 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const bookMark_service_1 = require("./bookMark.service");
 const bookMark_constant_1 = require("./bookMark.constant");
+const bookMark_service_1 = require("./bookMark.service");
 const createBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const BookMarkData = req.body;
-    const result = yield bookMark_service_1.BookMarkService.createBookMark(BookMarkData);
+    const user = req.user;
+    const result = yield bookMark_service_1.BookMarkService.createBookMark(Object.assign(Object.assign({}, BookMarkData), { userId: user.userId }));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -31,10 +32,7 @@ const createBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const getAllBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.default)(req.query, [
-        'searchTerm',
-        ...bookMark_constant_1.bookMarkFilterAbleFields,
-    ]);
+    const filters = (0, pick_1.default)(req.query, ['searchTerm', ...bookMark_constant_1.bookMarkFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const result = yield bookMark_service_1.BookMarkService.getAllBookMark(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {
@@ -48,6 +46,16 @@ const getAllBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 const getSingleBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const result = yield bookMark_service_1.BookMarkService.getSingleBookMark(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'BookMark retrieved  successfully!',
+        data: result,
+    });
+}));
+const getSingleUserBookMark = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const result = yield bookMark_service_1.BookMarkService.getSingleUserBookMark(user.userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -82,4 +90,5 @@ exports.BookMarkController = {
     updateBookMark,
     getSingleBookMark,
     deleteBookMark,
+    getSingleUserBookMark,
 };

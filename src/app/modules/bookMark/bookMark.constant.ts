@@ -1,9 +1,2 @@
-
-          export const bookMarkSearchableFields = [ 
-            
-          ];
-          export const bookMarkFilterAbleFields = [
-              
-            ];
-            
-          
+export const bookMarkSearchableFields = [];
+export const bookMarkFilterAbleFields = ['userId', 'bookId'];

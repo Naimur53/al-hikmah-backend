@@ -14,6 +14,7 @@ const user_router_1 = require("../modules/user/user.router");
 const wishlist_router_1 = require("../modules/wishlist/wishlist.router");
 const express_1 = __importDefault(require("express"));
 const auth_route_1 = require("../modules/auth/auth.route");
+const bookMark_router_1 = require("../modules/bookMark/bookMark.router");
 const bookPage_router_1 = require("../modules/bookPage/bookPage.router");
 const fileUpload_route_1 = require("../modules/fileUpload/fileUpload.route");
 const newsLetter_router_1 = require("../modules/newsLetter/newsLetter.router");
@@ -35,6 +36,10 @@ const moduleRoutes = [
     {
         path: '/book',
         route: book_router_1.BookRoutes,
+    },
+    {
+        path: '/bookMark',
+        route: bookMark_router_1.BookMarkRoutes,
     },
     {
         path: '/author',

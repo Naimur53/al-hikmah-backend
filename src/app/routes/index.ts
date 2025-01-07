@@ -10,6 +10,7 @@ import { WishlistRoutes } from '../modules/wishlist/wishlist.router';
 
 import express from 'express';
 import { AuthRoutes } from '../modules/auth/auth.route';
+import { BookMarkRoutes } from '../modules/bookMark/bookMark.router';
 import { BookPageRoutes } from '../modules/bookPage/bookPage.router';
 import { fileUploadRoutes } from '../modules/fileUpload/fileUpload.route';
 import { NewsLetterRoutes } from '../modules/newsLetter/newsLetter.router';
@@ -36,6 +37,10 @@ const moduleRoutes = [
   {
     path: '/book',
     route: BookRoutes,
+  },
+  {
+    path: '/bookMark',
+    route: BookMarkRoutes,
   },
 
   {

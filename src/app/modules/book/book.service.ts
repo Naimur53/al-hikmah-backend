@@ -5,6 +5,7 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
+import { bookEvents, EbookEvents } from '../../events/book.events';
 import { bookSearchableFields } from './book.constant';
 import { IBookFilters } from './book.interface';
 
@@ -128,6 +129,10 @@ const getAllBook = async (
       categoryId: true,
       bookPages: {
         take: 1,
+        select: {
+          id: true,
+          content: true,
+        },
         where: {
           chapterId: null,
           subChapterId: null,
@@ -274,6 +279,17 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
       pdfViewLink: true,
       totalShare: true,
       categoryId: true,
+      bookPages: {
+        take: 1,
+        select: {
+          id: true,
+          content: true,
+        },
+        where: {
+          chapterId: null,
+          subChapterId: null,
+        },
+      },
       chapters: {
         orderBy: {
           chapterNo: 'asc',
@@ -303,7 +319,10 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
       },
     },
   });
-  console.log(result);
+  if (result?.id) {
+    // increment total read
+    bookEvents.emit(EbookEvents.INCREMENT_READ_COUNT, result.id);
+  }
   return result;
 };
 

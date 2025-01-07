@@ -28,6 +28,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
+const book_events_1 = require("../../events/book.events");
 const book_constant_1 = require("./book.constant");
 const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -131,6 +132,10 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             categoryId: true,
             bookPages: {
                 take: 1,
+                select: {
+                    id: true,
+                    content: true,
+                },
                 where: {
                     chapterId: null,
                     subChapterId: null,
@@ -271,6 +276,17 @@ const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function
             pdfViewLink: true,
             totalShare: true,
             categoryId: true,
+            bookPages: {
+                take: 1,
+                select: {
+                    id: true,
+                    content: true,
+                },
+                where: {
+                    chapterId: null,
+                    subChapterId: null,
+                },
+            },
             chapters: {
                 orderBy: {
                     chapterNo: 'asc',
@@ -300,7 +316,10 @@ const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function
             },
         },
     });
-    console.log(result);
+    if (result === null || result === void 0 ? void 0 : result.id) {
+        // increment total read
+        book_events_1.bookEvents.emit(book_events_1.EbookEvents.INCREMENT_READ_COUNT, result.id);
+    }
     return result;
 });
 const getContentStructure = (_a) => __awaiter(void 0, [_a], void 0, function* ({ name, id, isActive, }) {

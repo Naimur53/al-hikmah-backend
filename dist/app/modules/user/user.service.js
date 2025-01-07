@@ -145,7 +145,7 @@ const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getAdminOverview = () => __awaiter(void 0, void 0, void 0, function* () {
-    const [totalUser, totalBook, totalBlog, totalNewsletter, totalAuthor, totalPublisher, totalCategory,] = yield Promise.all([
+    const [totalUser, totalBook, totalBlog, totalNewsletter, totalAuthor, totalPublisher, totalCategory, totalWishList,] = yield Promise.all([
         prisma_1.default.user.count(),
         prisma_1.default.book.count(),
         prisma_1.default.blog.count(),
@@ -153,6 +153,7 @@ const getAdminOverview = () => __awaiter(void 0, void 0, void 0, function* () {
         prisma_1.default.author.count(),
         prisma_1.default.publisher.count(),
         prisma_1.default.bookCategory.count(),
+        prisma_1.default.wishlist.count(),
     ]);
     return {
         totalUser,
@@ -162,6 +163,44 @@ const getAdminOverview = () => __awaiter(void 0, void 0, void 0, function* () {
         totalAuthor,
         totalPublisher,
         totalCategory,
+        totalWishList,
+    };
+});
+const getAdminChartInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+    // get top 10 book with hest totalRead
+    const [topBook, totalPublishBlog, totalPendingBlog, totalDeniedBlog] = yield Promise.all([
+        prisma_1.default.book.findMany({
+            select: {
+                name: true,
+                id: true,
+                totalRead: true,
+            },
+            orderBy: {
+                totalRead: 'desc',
+            },
+            take: 10,
+        }),
+        prisma_1.default.blog.count({
+            where: {
+                status: client_1.EBlogStatus.approved,
+            },
+        }),
+        prisma_1.default.blog.count({
+            where: {
+                status: client_1.EBlogStatus.pending,
+            },
+        }),
+        prisma_1.default.blog.count({
+            where: {
+                status: client_1.EBlogStatus.denied,
+            },
+        }),
+    ]);
+    return {
+        topBook,
+        totalPublishBlog,
+        totalPendingBlog,
+        totalDeniedBlog,
     };
 });
 exports.UserService = {
@@ -171,4 +210,5 @@ exports.UserService = {
     getSingleUser,
     deleteUser,
     getAdminOverview,
+    getAdminChartInfo,
 };
