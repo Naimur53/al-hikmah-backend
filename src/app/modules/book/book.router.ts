@@ -11,9 +11,9 @@ router.get(
   '/get-single-book-by-name/:name',
   BookController.getSingleBookByName,
 );
+router.get('/get-related-book-by-name', BookController.getRelatedBookByName);
 router.get('/get-content-structure', BookController.getContentStructure);
 router.get('/:id', BookController.getSingleBook);
-
 router.post(
   '/',
   auth(EUserRole.SUPER_ADMIN, EUserRole.ADMIN),

@@ -7,6 +7,7 @@ import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { bookFilterAbleFields } from './book.constant';
+import { IRelatedBook, IRelatedBookType } from './book.interface';
 import { BookService } from './book.service';
 
 const createBook: RequestHandler = catchAsync(
@@ -26,8 +27,12 @@ const createBook: RequestHandler = catchAsync(
 const getAllBook = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, ['searchTerm', ...bookFilterAbleFields]);
   const paginationOptions = pick(req.query, paginationFields);
-
-  const result = await BookService.getAllBook(filters, paginationOptions);
+  const isShort = req.query.isShort as string;
+  const result = await BookService.getAllBook(
+    filters,
+    paginationOptions,
+    Boolean(isShort === 'true'),
+  );
 
   sendResponse<Partial<Book>[]>(res, {
     statusCode: httpStatus.OK,
@@ -57,7 +62,7 @@ const getSingleBookByName: RequestHandler = catchAsync(
     const name = req.params.name;
 
     const result = await BookService.getSingleBookByName(name);
-
+    console.log(result);
     sendResponse<Book>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -133,7 +138,20 @@ const deleteBook: RequestHandler = catchAsync(
     });
   },
 );
+const getRelatedBookByName: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const name = req.query.name as string;
+    const type = req.query.type as IRelatedBookType;
 
+    const result = await BookService.getRelatedBookByName(name, type);
+    sendResponse<IRelatedBook[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Book retrieved  successfully!',
+      data: result,
+    });
+  },
+);
 export const BookController = {
   getAllBook,
   createBook,
@@ -143,4 +161,5 @@ export const BookController = {
   getSingleBookByName,
   updateBookShareCount,
   getContentStructure,
+  getRelatedBookByName,
 };

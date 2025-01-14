@@ -28,9 +28,11 @@ const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
+const utils_1 = require("../../../utils");
 const book_events_1 = require("../../events/book.events");
 const book_constant_1 = require("./book.constant");
-const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const book_interface_1 = require("./book.interface");
+const getAllBook = (filters, paginationOptions, isShort) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const { searchTerm, author, publisher, category } = filters, filterData = __rest(filters, ["searchTerm", "author", "publisher", "category"]);
     const andCondition = [];
@@ -100,6 +102,55 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
         });
     }
     const whereConditions = andCondition.length > 0 ? { AND: andCondition } : {};
+    const large = {
+        id: true,
+        name: true,
+        banglaName: true,
+        isFeatured: true,
+        description: true,
+        totalShare: true,
+        keywords: true,
+        photo: true,
+        createdAt: true,
+        updatedAt: true,
+        isActive: true,
+        author: true,
+        publisher: true,
+        category: true,
+        authorId: true,
+        publisherId: true,
+        totalRead: true,
+        categoryId: true,
+        bookPages: {
+            take: 1,
+            select: {
+                id: true,
+                content: true,
+            },
+            where: {
+                chapterId: null,
+                subChapterId: null,
+            },
+        },
+        chapters: {
+            take: 1,
+            orderBy: {
+                chapterNo: 'asc',
+            },
+            select: {
+                id: true,
+                title: true,
+            },
+        },
+    };
+    const short = {
+        id: true,
+        name: true,
+        banglaName: true,
+        photo: true,
+        author: true,
+        description: true,
+    };
     const result = yield prisma_1.default.book.findMany({
         where: whereConditions,
         skip,
@@ -111,47 +162,7 @@ const getAllBook = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             : {
                 createdAt: 'desc',
             },
-        select: {
-            id: true,
-            name: true,
-            banglaName: true,
-            isFeatured: true,
-            description: true,
-            totalShare: true,
-            keywords: true,
-            photo: true,
-            createdAt: true,
-            updatedAt: true,
-            isActive: true,
-            author: true,
-            publisher: true,
-            category: true,
-            authorId: true,
-            publisherId: true,
-            totalRead: true,
-            categoryId: true,
-            bookPages: {
-                take: 1,
-                select: {
-                    id: true,
-                    content: true,
-                },
-                where: {
-                    chapterId: null,
-                    subChapterId: null,
-                },
-            },
-            chapters: {
-                take: 1,
-                orderBy: {
-                    chapterNo: 'asc',
-                },
-                select: {
-                    id: true,
-                    title: true,
-                },
-            },
-        },
+        select: isShort ? short : large,
         // include: { author: true, publisher: true, category: true },
     });
     const total = yield prisma_1.default.book.count({ where: whereConditions });
@@ -217,6 +228,7 @@ const getSingleBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
             totalRead: true,
             pdfViewLink: true,
             categoryId: true,
+            isWishlist: true,
             chapters: {
                 orderBy: {
                     chapterNo: 'asc',
@@ -251,8 +263,8 @@ const getSingleBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.book.findUnique({
         where: {
-            name: name.includes('-') ? name.split('-').join(' ') : name,
-            isActive: true,
+            name: (0, utils_1.nameToCorrectString)(name),
+            // isActive: true,
         },
         select: {
             id: true,
@@ -274,6 +286,7 @@ const getSingleBookByName = (name) => __awaiter(void 0, void 0, void 0, function
             publisherId: true,
             totalRead: true,
             pdfViewLink: true,
+            isWishlist: true,
             totalShare: true,
             categoryId: true,
             bookPages: {
@@ -420,6 +433,111 @@ const deleteBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return result;
 });
+// get related book by name
+const getRelatedBookByName = (name, type) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!name) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, ' name is required!');
+    }
+    if (type) {
+        return yield prisma_1.default.book.findMany({
+            take: 10,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            where: {
+                OR: [
+                    type === book_interface_1.IRelatedBookType.CATEGORY
+                        ? { category: { name: (0, utils_1.nameToCorrectString)(name) } }
+                        : type === book_interface_1.IRelatedBookType.AUTHOR
+                            ? { author: { name: (0, utils_1.nameToCorrectString)(name) } }
+                            : type === book_interface_1.IRelatedBookType.LATEST
+                                ? { createdAt: { lte: new Date() } }
+                                : type === book_interface_1.IRelatedBookType.FEATURED
+                                    ? { isFeatured: true }
+                                    : type === book_interface_1.IRelatedBookType.WISHLIST
+                                        ? { isWishlist: true }
+                                        : { publisher: { name: (0, utils_1.nameToCorrectString)(name) } },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                photo: true,
+                description: true,
+                totalRead: true,
+                banglaName: true,
+            },
+        });
+    }
+    const bookInfo = yield prisma_1.default.book.findFirst({
+        where: { name: (0, utils_1.nameToCorrectString)(name) },
+        select: {
+            id: true,
+            name: true,
+            categoryId: true,
+            authorId: true,
+            publisherId: true,
+            keywords: true,
+        },
+    });
+    if (!bookInfo) {
+        return yield prisma_1.default.book.findMany({
+            where: { isActive: true },
+            select: {
+                id: true,
+                name: true,
+                photo: true,
+                description: true,
+                totalRead: true,
+                banglaName: true,
+            },
+        });
+    }
+    const result = yield prisma_1.default.book.findMany({
+        take: 10,
+        where: {
+            OR: [
+                { categoryId: bookInfo.categoryId },
+                { authorId: bookInfo.authorId },
+                { publisherId: bookInfo.publisherId },
+                ...bookInfo.keywords.split(',').map(single => {
+                    return {
+                        keywords: {
+                            contains: single,
+                            mode: 'insensitive',
+                        },
+                    };
+                }),
+            ],
+            isActive: true,
+            NOT: { id: bookInfo.id },
+        },
+        select: {
+            id: true,
+            name: true,
+            photo: true,
+            description: true,
+            totalRead: true,
+            banglaName: true,
+        },
+    });
+    if (result.length < 1) {
+        const randomBook = yield prisma_1.default.book.findMany({
+            where: { isActive: true, NOT: { id: bookInfo.id } },
+            take: 10,
+            select: {
+                id: true,
+                name: true,
+                photo: true,
+                description: true,
+                totalRead: true,
+                banglaName: true,
+            },
+        });
+        return randomBook;
+    }
+    return result;
+});
 exports.BookService = {
     getAllBook,
     createBook,
@@ -429,4 +547,5 @@ exports.BookService = {
     updateBookShareCount,
     getSingleBookByName,
     getContentStructure,
+    getRelatedBookByName,
 };

@@ -33,7 +33,8 @@ const createBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 const getAllBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, ['searchTerm', ...book_constant_1.bookFilterAbleFields]);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
-    const result = yield book_service_1.BookService.getAllBook(filters, paginationOptions);
+    const isShort = req.query.isShort;
+    const result = yield book_service_1.BookService.getAllBook(filters, paginationOptions, Boolean(isShort === 'true'));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -55,6 +56,7 @@ const getSingleBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 const getSingleBookByName = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const name = req.params.name;
     const result = yield book_service_1.BookService.getSingleBookByName(name);
+    console.log(result);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -112,6 +114,17 @@ const deleteBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const getRelatedBookByName = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = req.query.name;
+    const type = req.query.type;
+    const result = yield book_service_1.BookService.getRelatedBookByName(name, type);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Book retrieved  successfully!',
+        data: result,
+    });
+}));
 exports.BookController = {
     getAllBook,
     createBook,
@@ -121,4 +134,5 @@ exports.BookController = {
     getSingleBookByName,
     updateBookShareCount,
     getContentStructure,
+    getRelatedBookByName,
 };

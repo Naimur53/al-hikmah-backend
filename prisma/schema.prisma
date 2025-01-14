@@ -111,13 +111,15 @@ model Book {
   pdfViewLink String?
   isActive    Boolean      @default(true)
   isFeatured  Boolean      @default(false)
-
+  isWishlist  Boolean      @default(false)
   author      Author       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category    BookCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   publisher   Publisher    @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   bookPages   BookPage[]
   chapters    Chapter[]
   bookmarks   BookMark[]
+  // add index on name 
+  @@index([name])
 }
 
 model Chapter {

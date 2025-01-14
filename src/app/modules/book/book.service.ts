@@ -5,13 +5,15 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
+import { nameToCorrectString } from '../../../utils';
 import { bookEvents, EbookEvents } from '../../events/book.events';
 import { bookSearchableFields } from './book.constant';
-import { IBookFilters } from './book.interface';
+import { IBookFilters, IRelatedBook, IRelatedBookType } from './book.interface';
 
 const getAllBook = async (
   filters: IBookFilters,
   paginationOptions: IPaginationOptions,
+  isShort: boolean,
 ): Promise<IGenericResponse<Partial<Book>[]>> => {
   const { page, limit, skip } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -95,7 +97,55 @@ const getAllBook = async (
 
   const whereConditions: Prisma.BookWhereInput =
     andCondition.length > 0 ? { AND: andCondition } : {};
-
+  const large = {
+    id: true,
+    name: true,
+    banglaName: true,
+    isFeatured: true,
+    description: true,
+    totalShare: true,
+    keywords: true,
+    photo: true,
+    createdAt: true,
+    updatedAt: true,
+    isActive: true,
+    author: true,
+    publisher: true,
+    category: true,
+    authorId: true,
+    publisherId: true,
+    totalRead: true,
+    categoryId: true,
+    bookPages: {
+      take: 1,
+      select: {
+        id: true,
+        content: true,
+      },
+      where: {
+        chapterId: null,
+        subChapterId: null,
+      },
+    },
+    chapters: {
+      take: 1,
+      orderBy: {
+        chapterNo: 'asc',
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+    },
+  };
+  const short = {
+    id: true,
+    name: true,
+    banglaName: true,
+    photo: true,
+    author: true,
+    description: true,
+  };
   const result = await prisma.book.findMany({
     where: whereConditions,
     skip,
@@ -108,47 +158,7 @@ const getAllBook = async (
         : {
             createdAt: 'desc',
           },
-    select: {
-      id: true,
-      name: true,
-      banglaName: true,
-      isFeatured: true,
-      description: true,
-      totalShare: true,
-      keywords: true,
-      photo: true,
-      createdAt: true,
-      updatedAt: true,
-      isActive: true,
-      author: true,
-      publisher: true,
-      category: true,
-      authorId: true,
-      publisherId: true,
-      totalRead: true,
-      categoryId: true,
-      bookPages: {
-        take: 1,
-        select: {
-          id: true,
-          content: true,
-        },
-        where: {
-          chapterId: null,
-          subChapterId: null,
-        },
-      },
-      chapters: {
-        take: 1,
-        orderBy: {
-          chapterNo: 'asc',
-        },
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-    },
+    select: isShort ? short : large,
     // include: { author: true, publisher: true, category: true },
   });
 
@@ -220,6 +230,7 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
       totalRead: true,
       pdfViewLink: true,
       categoryId: true,
+      isWishlist: true,
       chapters: {
         orderBy: {
           chapterNo: 'asc',
@@ -254,8 +265,8 @@ const getSingleBook = async (id: string): Promise<Book | null> => {
 const getSingleBookByName = async (name: string): Promise<Book | null> => {
   const result = await prisma.book.findUnique({
     where: {
-      name: name.includes('-') ? name.split('-').join(' ') : name,
-      isActive: true,
+      name: nameToCorrectString(name),
+      // isActive: true,
     },
     select: {
       id: true,
@@ -277,6 +288,7 @@ const getSingleBookByName = async (name: string): Promise<Book | null> => {
       publisherId: true,
       totalRead: true,
       pdfViewLink: true,
+      isWishlist: true,
       totalShare: true,
       categoryId: true,
       bookPages: {
@@ -438,6 +450,118 @@ const deleteBook = async (id: string): Promise<Book | null> => {
   return result;
 };
 
+// get related book by name
+const getRelatedBookByName = async (
+  name: string,
+  type?: IRelatedBookType,
+): Promise<IRelatedBook[] | null> => {
+  if (!name) {
+    throw new ApiError(httpStatus.BAD_REQUEST, ' name is required!');
+  }
+  if (type) {
+    return await prisma.book.findMany({
+      take: 10,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        OR: [
+          type === IRelatedBookType.CATEGORY
+            ? { category: { name: nameToCorrectString(name) } }
+            : type === IRelatedBookType.AUTHOR
+              ? { author: { name: nameToCorrectString(name) } }
+              : type === IRelatedBookType.LATEST
+                ? { createdAt: { lte: new Date() } }
+                : type === IRelatedBookType.FEATURED
+                  ? { isFeatured: true }
+                  : type === IRelatedBookType.WISHLIST
+                    ? { isWishlist: true }
+                    : { publisher: { name: nameToCorrectString(name) } },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        description: true,
+        totalRead: true,
+        banglaName: true,
+      },
+    });
+  }
+  const bookInfo = await prisma.book.findFirst({
+    where: { name: nameToCorrectString(name) },
+    select: {
+      id: true,
+      name: true,
+
+      categoryId: true,
+      authorId: true,
+      publisherId: true,
+      keywords: true,
+    },
+  });
+
+  if (!bookInfo) {
+    return await prisma.book.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        description: true,
+        totalRead: true,
+        banglaName: true,
+      },
+    });
+  }
+  const result = await prisma.book.findMany({
+    take: 10,
+    where: {
+      OR: [
+        { categoryId: bookInfo.categoryId },
+        { authorId: bookInfo.authorId },
+        { publisherId: bookInfo.publisherId },
+        ...bookInfo.keywords.split(',').map(single => {
+          return {
+            keywords: {
+              contains: single,
+              mode: 'insensitive' as Prisma.QueryMode,
+            },
+          };
+        }),
+      ],
+      isActive: true,
+      NOT: { id: bookInfo.id },
+    },
+    select: {
+      id: true,
+      name: true,
+      photo: true,
+      description: true,
+      totalRead: true,
+      banglaName: true,
+    },
+  });
+  if (result.length < 1) {
+    const randomBook = await prisma.book.findMany({
+      where: { isActive: true, NOT: { id: bookInfo.id } },
+      take: 10,
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        description: true,
+        totalRead: true,
+        banglaName: true,
+      },
+    });
+    return randomBook;
+  }
+
+  return result;
+};
+
 export const BookService = {
   getAllBook,
   createBook,
@@ -447,4 +571,5 @@ export const BookService = {
   updateBookShareCount,
   getSingleBookByName,
   getContentStructure,
+  getRelatedBookByName,
 };
