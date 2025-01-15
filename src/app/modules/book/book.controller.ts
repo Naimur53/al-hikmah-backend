@@ -138,6 +138,18 @@ const deleteBook: RequestHandler = catchAsync(
     });
   },
 );
+const getBooksBySearchText: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const searchText = req.query.searchText as string;
+    const result = await BookService.getBooksBySearchText(searchText);
+    sendResponse<Partial<Book>[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Book Names retrieved successfully!',
+      data: result,
+    });
+  },
+);
 const getRelatedBookByName: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const name = req.query.name as string;
@@ -162,4 +174,5 @@ export const BookController = {
   updateBookShareCount,
   getContentStructure,
   getRelatedBookByName,
+  getBooksBySearchText,
 };

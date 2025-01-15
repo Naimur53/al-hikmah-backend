@@ -12,4 +12,6 @@ exports.bookFilterAbleFields = [
     'authorId',
     'publisherId',
     'isActive',
+    'isWishlist',
+    'isFeatured',
 ];

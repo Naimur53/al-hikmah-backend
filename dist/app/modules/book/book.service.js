@@ -93,7 +93,7 @@ const getAllBook = (filters, paginationOptions, isShort) => __awaiter(void 0, vo
             AND: Object.keys(filterData).map(key => {
                 return {
                     [key]: {
-                        equals: key === 'isActive' || key === 'isFeatured'
+                        equals: key === 'isActive' || key === 'isFeatured' || key === 'isWishlist'
                             ? JSON.parse(filterData[key])
                             : filterData[key],
                     },
@@ -433,6 +433,41 @@ const deleteBook = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return result;
 });
+const getBooksBySearchText = (searchText) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.book.findMany({
+        take: 10,
+        where: {
+            OR: [
+                { name: { contains: searchText, mode: 'insensitive' } },
+                { banglaName: { contains: searchText, mode: 'insensitive' } },
+                { keywords: { contains: searchText, mode: 'insensitive' } },
+            ],
+            AND: [{ isActive: true }],
+        },
+        select: {
+            id: true,
+            name: true,
+            photo: true,
+            banglaName: true,
+            author: {
+                select: {
+                    name: true,
+                },
+            },
+            // publisher: {
+            //   select: {
+            //     name: true,
+            //   },
+            // },
+            // category: {
+            //   select: {
+            //     name: true,
+            //   },
+            // },
+        },
+    });
+    return result;
+});
 // get related book by name
 const getRelatedBookByName = (name, type) => __awaiter(void 0, void 0, void 0, function* () {
     if (!name) {
@@ -548,4 +583,5 @@ exports.BookService = {
     getSingleBookByName,
     getContentStructure,
     getRelatedBookByName,
+    getBooksBySearchText,
 };

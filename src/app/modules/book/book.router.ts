@@ -11,6 +11,7 @@ router.get(
   '/get-single-book-by-name/:name',
   BookController.getSingleBookByName,
 );
+router.get('/get-books-by-search-text', BookController.getBooksBySearchText);
 router.get('/get-related-book-by-name', BookController.getRelatedBookByName);
 router.get('/get-content-structure', BookController.getContentStructure);
 router.get('/:id', BookController.getSingleBook);

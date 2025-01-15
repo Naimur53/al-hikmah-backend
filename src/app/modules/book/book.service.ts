@@ -86,7 +86,7 @@ const getAllBook = async (
         return {
           [key]: {
             equals:
-              key === 'isActive' || key === 'isFeatured'
+              key === 'isActive' || key === 'isFeatured' || key === 'isWishlist'
                 ? JSON.parse((filterData as any)[key])
                 : (filterData as any)[key],
           },
@@ -450,6 +450,43 @@ const deleteBook = async (id: string): Promise<Book | null> => {
   return result;
 };
 
+const getBooksBySearchText = async (
+  searchText: string,
+): Promise<Partial<Book>[] | null> => {
+  const result = await prisma.book.findMany({
+    take: 10,
+    where: {
+      OR: [
+        { name: { contains: searchText, mode: 'insensitive' } },
+        { banglaName: { contains: searchText, mode: 'insensitive' } },
+        { keywords: { contains: searchText, mode: 'insensitive' } },
+      ],
+      AND: [{ isActive: true }],
+    },
+    select: {
+      id: true,
+      name: true,
+      photo: true,
+      banglaName: true,
+      author: {
+        select: {
+          name: true,
+        },
+      },
+      // publisher: {
+      //   select: {
+      //     name: true,
+      //   },
+      // },
+      // category: {
+      //   select: {
+      //     name: true,
+      //   },
+      // },
+    },
+  });
+  return result;
+};
 // get related book by name
 const getRelatedBookByName = async (
   name: string,
@@ -572,4 +609,5 @@ export const BookService = {
   getSingleBookByName,
   getContentStructure,
   getRelatedBookByName,
+  getBooksBySearchText,
 };

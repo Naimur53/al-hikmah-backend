@@ -114,6 +114,16 @@ const deleteBook = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const getBooksBySearchText = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const searchText = req.query.searchText;
+    const result = yield book_service_1.BookService.getBooksBySearchText(searchText);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Book Names retrieved successfully!',
+        data: result,
+    });
+}));
 const getRelatedBookByName = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const name = req.query.name;
     const type = req.query.type;
@@ -135,4 +145,5 @@ exports.BookController = {
     updateBookShareCount,
     getContentStructure,
     getRelatedBookByName,
+    getBooksBySearchText,
 };
