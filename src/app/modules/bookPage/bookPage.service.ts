@@ -74,6 +74,7 @@ const getAllBookPage = async (
         select: {
           id: true,
           name: true,
+          banglaName: true,
         },
       },
       chapter: {

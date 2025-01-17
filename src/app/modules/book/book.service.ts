@@ -102,6 +102,7 @@ const getAllBook = async (
     name: true,
     banglaName: true,
     isFeatured: true,
+    isWishlist: true,
     description: true,
     totalShare: true,
     keywords: true,

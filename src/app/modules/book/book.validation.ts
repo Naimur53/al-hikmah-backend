@@ -31,7 +31,8 @@ const updateValidation = z.object({
       .string({ required_error: 'Name is required' })
       .refine(val => !val.includes('-'), {
         message: 'Name cannot contain a hyphen (-)',
-      }),
+      })
+      .optional(),
     banglaName: z
       .string({ required_error: 'banglaName is required' })
       .optional(),
@@ -43,8 +44,14 @@ const updateValidation = z.object({
       .string({ required_error: 'Description is required' })
       .optional(),
     keywords: z.string({ required_error: 'Keywords is required' }).optional(),
-    docLink: z.string({ required_error: 'DocLink is required' }).optional(),
-    pdfLink: z.string({ required_error: 'PdfLink is required' }).optional(),
+    docLink: z
+      .string({ required_error: 'DocLink is required' })
+      .optional()
+      .nullable(),
+    pdfLink: z
+      .string({ required_error: 'PdfLink is required' })
+      .optional()
+      .nullable(),
     categoryId: z
       .string({ required_error: 'CategoryId is required' })
       .optional(),

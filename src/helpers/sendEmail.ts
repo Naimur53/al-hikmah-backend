@@ -7,27 +7,26 @@ const sendEmail = async (
   { to, multi }: { to: string; multi?: string[] },
   { subject, html, text }: { subject: string; html: string; text?: string },
 ) => {
-  const transport = await nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: config.emailUser,
-      pass: config.emailUserPass,
-    },
-  });
-  console.log('hi');
   // const transport = await nodemailer.createTransport({
-  //   host: 'smtp.privateemail.com', // or 'smtp.privateemail.com'
-  //   port: 465, // or 465 for SSL or 587
-  //   secure: true, // true for 465, false for 587
+  //   service: 'gmail',
   //   auth: {
   //     user: config.emailUser,
   //     pass: config.emailUserPass,
   //   },
-  //   tls: {
-  //     // Enable TLS encryption
-  //     ciphers: 'SSLv3',
-  //   },
   // });
+  const transport = await nodemailer.createTransport({
+    host: 'smtp.privateemail.com', // or 'smtp.privateemail.com'
+    port: 465, // or 465 for SSL or 587
+    secure: true, // true for 465, false for 587
+    auth: {
+      user: config.emailUser,
+      pass: config.emailUserPass,
+    },
+    tls: {
+      // Enable TLS encryption
+      ciphers: 'SSLv3',
+    },
+  });
   // send mail with defined transport object
   const mailOptions = {
     from: config.emailUser,
